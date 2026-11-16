@@ -645,20 +645,6 @@ st.write("")
 # IMPORTANT: No HTML <br> tags in the description.
 # Separate paragraphs are created using normal HTML paragraph tags.
 
-st.markdown("""
-<div class="hero-description">
-    <p>
-        Explore short-term air quality forecasts, identify potential
-        pollution changes and understand the uncertainty behind
-        predicted conditions.
-    </p>
-    <p>
-        From historical observations to predictive analytics,
-        discover how air quality may evolve over the next 24 hours.
-    </p>
-</div>
-""", unsafe_allow_html=True)
-
 st.write("")
 st.write("")
 
@@ -677,15 +663,6 @@ with left:
         type=["csv"],
         help="Upload a CSV containing historical AQI readings."
     )
-
-with right:
-    st.markdown("""
-    <div class="notice">
-        <b>DATA REQUIREMENT</b><br>
-        Ideally provide at least 24 historical hourly readings.
-        More observations can produce a more informative baseline.
-    </div>
-    """, unsafe_allow_html=True)
 
 
 # ============================================================

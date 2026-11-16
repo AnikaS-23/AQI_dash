@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from utils.recommendations import get_health_recommendation
 
 # ============================================================
 # AEROSENSE AI — HEALTH ADVISORY
@@ -562,6 +563,7 @@ aqi_value = st.slider(
 )
 
 category, description, category_color = get_aqi_details(aqi_value)
+health_result = get_health_recommendation(aqi_value)
 
 col1, col2, col3 = st.columns(3)
 
@@ -799,11 +801,16 @@ selected_pollutant = st.selectbox(
 
 pollutant_name, pollutant_description = pollutants[selected_pollutant]
 
+
 info_panel(
     "POLLUTANT PROFILE",
     selected_pollutant,
     f"{pollutant_name} — {pollutant_description}"
 )
+
+st.markdown("### Recommended action")
+st.info(health_result["recommendation"])
+
 
 
 # ============================================================

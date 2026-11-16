@@ -639,18 +639,6 @@ st.markdown("""
 
 st.write("")
 
-st.markdown("""
-<div class="hero-description">
-    Explore short-term air quality forecasts, identify potential
-    pollution changes and understand the uncertainty behind
-    predicted conditions.
-
-    <br><br>
-
-    From historical observations to predictive analytics,
-    discover how air quality may evolve over the next 24 hours.
-</div>
-""", unsafe_allow_html=True)
 
 st.write("")
 st.write("")
