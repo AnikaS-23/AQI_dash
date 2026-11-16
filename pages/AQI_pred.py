@@ -2,122 +2,252 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
-from io import BytesIO
+from datetime import timedelta
 
 # ============================================================
 # AEROSENSE AI — AQI PREDICTION
+# ============================================================
+
+st.set_page_config(
+    page_title="AQI Prediction | AeroSense AI",
+    page_icon="🌿",
+    layout="wide"
+)
+
+# ============================================================
+# GLOBAL HOMEPAGE THEME
 # ============================================================
 
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif;
+:root {
+    --bg: #080B0A;
+    --surface: #111815;
+    --surface2: #151F1A;
+    --border: #25372D;
+    --green: #8CCF9B;
+    --teal: #4CA99A;
+    --white: #EDF5EF;
+    --muted: #91A397;
 }
 
 .stApp {
-    background: #101512;
-    color: #E7EEE8;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
 }
 
 .block-container {
-    padding-top: 2.2rem;
-    padding-bottom: 3rem;
     max-width: 1450px;
+    padding-top: 2.4rem;
+    padding-bottom: 3rem;
 }
 
-h1, h2, h3 {
+/* SIDEBAR */
+
+section[data-testid="stSidebar"] {
+    background: #0B110E;
+    border-right: 1px solid #1D2C23;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #DCE9DF;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {
+    border-radius: 9px;
+    margin: 5px 0;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {
+    background: #1B2B21;
+}
+
+section[data-testid="stSidebar"] [aria-current="page"] {
+    background: #20352A;
+    border-left: 3px solid #8CCF9B;
+}
+
+/* TEXT */
+
+h1, h2, h3, h4 {
     font-family: 'Manrope', sans-serif !important;
-    color: #E8F0E9 !important;
+    color: var(--white) !important;
 }
 
-p, label, span {
-    color: #C2CEC5;
+p, li, label {
+    color: #C0CEC3;
 }
 
-.hero {
-    background: linear-gradient(120deg, #1A2921, #17251F 55%, #1B3029);
-    border: 1px solid #34483B;
-    border-radius: 18px;
-    padding: 28px 32px;
-    margin-bottom: 25px;
+.stCaption, [data-testid="stCaptionContainer"] {
+    color: var(--muted) !important;
 }
 
-.hero-tag {
-    color: #9CBDA6;
+/* BRAND */
+
+.brand {
+    font-family: 'Manrope', sans-serif;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #EDF5EF;
+}
+
+.brand-dot {
+    color: #8CCF9B;
+}
+
+.brand-sub {
+    color: #82978A;
     font-size: 11px;
     letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+.status-pill {
+    display: inline-block;
+    color: #9AD8A7;
+    background: #14251A;
+    border: 1px solid #2D5639;
+    border-radius: 30px;
+    padding: 6px 12px;
+    font-size: 10px;
     font-weight: 700;
-    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* HERO */
+
+.hero-label {
+    color: #8CCF9B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
 }
 
 .hero-title {
-    color: #F0F5F0;
     font-family: 'Manrope', sans-serif;
-    font-size: 34px;
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.12;
+    letter-spacing: -3px;
     font-weight: 800;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    color: #F0F7F1;
+    margin-top: 20px;
 }
 
-.hero-sub {
-    color: #AABBB0;
-    font-size: 14px;
-    max-width: 750px;
-    line-height: 1.7;
+.hero-accent {
+    color: #8CCF9B;
 }
 
-.section-title {
-    font-family: 'Manrope', sans-serif;
-    color: #E5EEE7;
-    font-size: 19px;
+.hero-description {
+    color: #9AABA0;
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 720px;
+}
+
+/* SECTION LABEL */
+
+.section-label {
+    color: #9ACBA3;
+    font-size: 11px;
     font-weight: 700;
-    margin-top: 25px;
-    margin-bottom: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
 }
+
+/* CARDS */
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 16px;
+    transition: border-color 0.2s ease;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    border-color: #568B65;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    padding: 9px;
+}
+
+/* METRICS */
+
+div[data-testid="stMetric"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #91A397;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #EAF5EC;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+}
+
+/* CUSTOM METRIC CARDS */
 
 .metric-card {
-    background: #19211C;
-    border: 1px solid #303E34;
+    background: #111815;
+    border: 1px solid #25372D;
     border-radius: 14px;
-    padding: 18px 20px;
-    min-height: 112px;
+    padding: 20px;
+    min-height: 120px;
+    transition: border-color 0.2s ease;
+}
+
+.metric-card:hover {
+    border-color: #568B65;
 }
 
 .metric-label {
     color: #91A397;
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.5px;
     font-weight: 700;
 }
 
 .metric-value {
-    color: #EDF4EE;
+    color: #EDF5EF;
     font-family: 'Manrope', sans-serif;
-    font-size: 29px;
+    font-size: 30px;
     font-weight: 800;
-    margin-top: 9px;
+    margin-top: 12px;
 }
 
 .metric-note {
     color: #91A397;
-    font-size: 12px;
-    margin-top: 4px;
+    font-size: 11px;
+    margin-top: 5px;
 }
 
+/* PANELS */
+
 .panel {
-    background: #19211C;
-    border: 1px solid #303E34;
-    border-radius: 15px;
-    padding: 20px 22px;
-    margin-bottom: 15px;
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.panel:hover {
+    border-color: #568B65;
 }
 
 .panel-heading {
-    color: #E5EEE7;
+    color: #EDF5EF;
     font-family: 'Manrope', sans-serif;
     font-weight: 700;
     font-size: 16px;
@@ -130,106 +260,180 @@ p, label, span {
     margin-bottom: 13px;
 }
 
-.status-pill {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+/* STATUS PILLS */
+
+.status-pill.good {
+    background: #14251A;
+    color: #9AD8A7;
+    border: 1px solid #2D5639;
 }
 
-.good {
-    background: #1D3B2C;
-    color: #91D6A8;
-}
-
-.satisfactory {
-    background: #35412A;
+.status-pill.satisfactory {
+    background: #252D1B;
     color: #C3D98C;
+    border: 1px solid #515B35;
 }
 
-.moderate {
-    background: #4A3C22;
+.status-pill.moderate {
+    background: #302719;
     color: #EBC47A;
+    border: 1px solid #66502C;
 }
 
-.poor {
-    background: #4A2E24;
+.status-pill.poor {
+    background: #35221A;
     color: #E6A078;
+    border: 1px solid #70432F;
 }
 
-.very-poor {
-    background: #48252A;
+.status-pill.very-poor {
+    background: #351C23;
     color: #E58C91;
+    border: 1px solid #71313C;
 }
 
-.severe {
-    background: #4A2020;
+.status-pill.severe {
+    background: #351B1B;
     color: #F08D82;
+    border: 1px solid #713131;
 }
+
+/* NOTICES */
 
 .notice {
-    background: #202C25;
-    border-left: 3px solid #83B394;
-    padding: 13px 16px;
-    border-radius: 7px;
-    color: #B7C7BB;
+    background: #151F1A;
+    border: 1px solid #25372D;
+    border-left: 3px solid #8CCF9B;
+    padding: 15px 17px;
+    border-radius: 9px;
+    color: #C0CEC3;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.8;
     margin: 12px 0;
 }
 
-div[data-testid="stMetric"] {
-    background: #19211C;
-    border: 1px solid #303E34;
-    padding: 15px;
+/* INPUTS */
+
+.stTextInput input,
+.stNumberInput input {
+    background: #151F1A !important;
+    color: #EDF5EF !important;
+    border-color: #25372D !important;
+    border-radius: 9px;
+}
+
+.stSelectbox div[data-baseweb="select"] > div {
+    background: #151F1A !important;
+    color: #EDF5EF !important;
+    border-color: #25372D !important;
+}
+
+.stFileUploader section {
+    background: #111815;
+    border: 1px dashed #365541;
     border-radius: 12px;
 }
 
-div[data-testid="stMetric"] label {
-    color: #91A397 !important;
+.stFileUploader label {
+    color: #C0CEC3 !important;
 }
 
-div[data-testid="stMetricValue"] {
-    color: #EAF2EB !important;
+.stCheckbox label {
+    color: #C0CEC3 !important;
 }
 
-.stButton > button, .stDownloadButton > button {
-    background: #789D83;
-    color: #101812;
+/* BUTTONS */
+
+.stButton > button,
+.stDownloadButton > button {
+    background: #8CCF9B;
+    color: #08100B;
     border: none;
-    border-radius: 8px;
+    border-radius: 9px;
     font-weight: 700;
-    padding: 9px 18px;
 }
 
-.stButton > button:hover, .stDownloadButton > button:hover {
-    background: #91B59B;
-    color: #101812;
-    border: none;
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    background: #A7E0B1;
+    color: #08100B;
 }
 
-.stTextInput input, .stNumberInput input,
-.stSelectbox div[data-baseweb="select"] {
-    background: #202A23 !important;
-    color: #E5EEE7 !important;
+/* EXPANDERS */
+
+div[data-testid="stExpander"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 12px;
 }
+
+div[data-testid="stExpander"] summary {
+    color: #EDF5EF;
+}
+
+/* DATAFRAME */
+
+div[data-testid="stDataFrame"] {
+    border: 1px solid #25372D;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* CHARTS */
+
+.stProgress > div > div > div {
+    background: #8CCF9B;
+}
+
+/* ALERTS */
+
+div[data-testid="stAlert"] {
+    background: #151F1A;
+    border: 1px solid #25372D;
+    border-radius: 12px;
+}
+
+/* DIVIDERS */
 
 hr {
-    border-color: #303E34;
+    border-color: #25372D !important;
 }
 
-.footer {
-    color: #718278;
-    font-size: 11px;
-    text-align: center;
-    margin-top: 35px;
-    padding-top: 15px;
-    border-top: 1px solid #29352D;
+/* HIDE DEFAULT ELEMENTS */
+
+#MainMenu {
+    visibility: hidden;
 }
+
+footer {
+    visibility: hidden;
+}
+
+div[data-testid="stDecoration"] {
+    display: none;
+}
+
+/* FOOTER */
+
+.footer-text {
+    color: #71847A;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+}
+
 </style>
 """, unsafe_allow_html=True)
+
+
+# ============================================================
+# REUSABLE PAGE ELEMENTS
+# ============================================================
+
+def section_heading(number, title):
+    st.markdown(
+        f'<div class="section-label">{number} / {title.upper()}</div>',
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -346,21 +550,17 @@ def generate_forecast(data, forecast_hours=24):
             "At least 3 valid historical AQI readings are required."
         )
 
-    # Use up to the most recent 48 readings
     recent = values[-48:]
 
     x = np.arange(len(recent))
 
-    # Estimate recent linear trend
     slope, intercept = np.polyfit(x, recent, 1)
 
     fitted = slope * x + intercept
     residuals = recent - fitted
 
-    # Estimate variability from recent observations
     residual_std = float(np.std(residuals))
 
-    # Avoid excessively aggressive extrapolation
     damped_slope = np.clip(slope, -2.5, 2.5) * 0.35
 
     last_value = float(recent[-1])
@@ -368,11 +568,8 @@ def generate_forecast(data, forecast_hours=24):
     future_steps = np.arange(1, forecast_hours + 1)
 
     predicted = last_value + damped_slope * future_steps
-
-    # Keep predictions within the India AQI scale
     predicted = np.clip(predicted, 0, 500)
 
-    # Uncertainty grows with forecast distance
     uncertainty = residual_std * np.sqrt(future_steps / 3)
 
     lower = np.clip(predicted - uncertainty, 0, 500)
@@ -398,30 +595,79 @@ def generate_forecast(data, forecast_hours=24):
 
 
 # ============================================================
-# HEADER
+# TOP BRAND SECTION
 # ============================================================
 
+top_left, top_right = st.columns([3, 1])
+
+with top_left:
+    st.markdown(
+        '<div class="brand"><span class="brand-dot">●</span> AEROSENSE AI</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="brand-sub">AIR QUALITY INTELLIGENCE PLATFORM</div>',
+        unsafe_allow_html=True
+    )
+
+with top_right:
+    st.markdown(
+        '<div style="text-align:right; padding-top:10px;">'
+        '<span class="status-pill">● SYSTEM ONLINE</span></div>',
+        unsafe_allow_html=True
+    )
+
+st.write("")
+st.caption("ENVIRONMENTAL INTELLIGENCE  /  PREDICTIVE ANALYTICS")
+st.divider()
+
+
+# ============================================================
+# HERO SECTION — CORRECTED
+# ============================================================
+
+st.write("")
+
+st.markdown(
+    '<div class="hero-label">ENVIRONMENTAL DATA · ANALYTICS · INTELLIGENCE</div>',
+    unsafe_allow_html=True
+)
+
 st.markdown("""
-<div class="hero">
-    <div class="hero-tag">AEROSENSE AI / INTELLIGENCE MODULE 04</div>
-    <div class="hero-title">AQI Prediction</div>
-    <div class="hero-sub">
+<div class="hero-title">
+    Predict the air.<br>
+    Understand <span class="hero-accent">what comes next.</span>
+</div>
+""", unsafe_allow_html=True)
+
+st.write("")
+
+# IMPORTANT: No HTML <br> tags in the description.
+# Separate paragraphs are created using normal HTML paragraph tags.
+
+st.markdown("""
+<div class="hero-description">
+    <p>
         Explore short-term air quality forecasts, identify potential
         pollution changes and understand the uncertainty behind
         predicted conditions.
-    </div>
+    </p>
+    <p>
+        From historical observations to predictive analytics,
+        discover how air quality may evolve over the next 24 hours.
+    </p>
 </div>
 """, unsafe_allow_html=True)
+
+st.write("")
+st.write("")
 
 
 # ============================================================
 # DATA INPUT
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">01 / Historical data source</div>',
-    unsafe_allow_html=True
-)
+section_heading("01", "Historical data source")
 
 left, right = st.columns([1.5, 1])
 
@@ -435,7 +681,7 @@ with left:
 with right:
     st.markdown("""
     <div class="notice">
-        <b>Data requirement</b><br>
+        <b>DATA REQUIREMENT</b><br>
         Ideally provide at least 24 historical hourly readings.
         More observations can produce a more informative baseline.
     </div>
@@ -464,7 +710,6 @@ if uploaded_file is not None:
 
 else:
 
-    # Clearly labelled illustrative demo data
     demo_mode = True
 
     demo_values = [
@@ -654,13 +899,8 @@ except Exception as e:
 # CALCULATE SUMMARY
 # ============================================================
 
-current_aqi = float(
-    historical_data["AQI"].iloc[-1]
-)
-
-average_aqi = float(
-    historical_data["AQI"].mean()
-)
+current_aqi = float(historical_data["AQI"].iloc[-1])
+average_aqi = float(historical_data["AQI"].mean())
 
 predicted_average = float(
     forecast_data["Predicted AQI"].mean()
@@ -681,9 +921,7 @@ change_percent = (
     if current_aqi != 0 else 0
 )
 
-current_category, current_class = get_aqi_category(
-    current_aqi
-)
+current_category, current_class = get_aqi_category(current_aqi)
 
 forecast_category, forecast_class = get_aqi_category(
     predicted_average
@@ -694,10 +932,7 @@ forecast_category, forecast_class = get_aqi_category(
 # SUMMARY CARDS
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">02 / Forecast overview</div>',
-    unsafe_allow_html=True
-)
+section_heading("02", "Forecast overview")
 
 m1, m2, m3, m4 = st.columns(4)
 
@@ -742,10 +977,7 @@ with m4:
 # FORECAST STATUS
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">03 / Expected air quality</div>',
-    unsafe_allow_html=True
-)
+section_heading("03", "Expected air quality")
 
 status_col, advisory_col = st.columns([1, 2])
 
@@ -755,7 +987,7 @@ with status_col:
     <div class="panel">
         <div class="panel-caption">EXPECTED 24-HOUR CATEGORY</div>
         <div style="font-size:31px; font-weight:800;
-                    font-family:Manrope; color:#EDF4EE;">
+                    font-family:Manrope; color:#EDF5EF;">
             {forecast_category}
         </div>
         <br>
@@ -773,7 +1005,7 @@ with advisory_col:
         <div class="panel-caption">
             Based on the estimated average AQI category
         </div>
-        <p style="font-size:14px; line-height:1.8; color:#B9C8BD;">
+        <p style="font-size:14px; line-height:1.8; color:#C0CEC3;">
             {get_advisory(predicted_average)}
         </p>
     </div>
@@ -784,10 +1016,7 @@ with advisory_col:
 # FORECAST CHART
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">04 / 24-hour AQI forecast</div>',
-    unsafe_allow_html=True
-)
+section_heading("04", "24-hour AQI forecast")
 
 st.markdown("""
 <div class="panel">
@@ -827,10 +1056,7 @@ st.caption(
 # FORECAST INTERPRETATION
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">05 / Forecast interpretation</div>',
-    unsafe_allow_html=True
-)
+section_heading("05", "Forecast interpretation")
 
 interpret_col1, interpret_col2 = st.columns(2)
 
@@ -856,10 +1082,10 @@ with interpret_col1:
     <div class="panel">
         <div class="panel-heading">Expected trend</div>
         <div style="font-size:23px; font-weight:800;
-                    color:#A8C9AE; margin-top:12px;">
+                    color:#8CCF9B; margin-top:12px;">
             {trend_text}
         </div>
-        <p style="color:#AABBB0; font-size:13px;
+        <p style="color:#91A397; font-size:13px;
                   line-height:1.7; margin-top:8px;">
             {trend_description}
         </p>
@@ -893,10 +1119,11 @@ with interpret_col2:
     <div class="panel">
         <div class="panel-heading">Forecast time highlights</div>
         <div style="margin-top:12px;">
-            <span style="color:#91C9A0; font-size:12px;">
+            <span style="color:#8CCF9B; font-size:11px;
+                         letter-spacing:1px;">
                 LOWEST ESTIMATED AQI
             </span>
-            <div style="font-size:19px; color:#E7EEE8;
+            <div style="font-size:19px; color:#EDF5EF;
                         font-weight:700;">
                 {best_time}
             </div>
@@ -906,10 +1133,11 @@ with interpret_col2:
         </div>
         <hr>
         <div>
-            <span style="color:#D6A17E; font-size:12px;">
+            <span style="color:#D6A17E; font-size:11px;
+                         letter-spacing:1px;">
                 HIGHEST ESTIMATED AQI
             </span>
-            <div style="font-size:19px; color:#E7EEE8;
+            <div style="font-size:19px; color:#EDF5EF;
                         font-weight:700;">
                 {worst_time}
             </div>
@@ -925,18 +1153,12 @@ with interpret_col2:
 # HISTORICAL ANALYSIS
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">06 / Historical performance</div>',
-    unsafe_allow_html=True
-)
+section_heading("06", "Historical performance")
 
 hist1, hist2, hist3 = st.columns(3)
 
 with hist1:
-    st.metric(
-        "Historical average",
-        f"{average_aqi:.1f}"
-    )
+    st.metric("Historical average", f"{average_aqi:.1f}")
 
 with hist2:
     st.metric(
@@ -972,10 +1194,7 @@ with st.expander("View historical AQI readings"):
 # FORECAST TABLE
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">07 / Detailed forecast data</div>',
-    unsafe_allow_html=True
-)
+section_heading("07", "Detailed forecast data")
 
 display_forecast = forecast_data.copy()
 
@@ -1006,10 +1225,7 @@ st.dataframe(
 # DOWNLOAD FORECAST
 # ============================================================
 
-st.markdown(
-    '<div class="section-title">08 / Export forecast</div>',
-    unsafe_allow_html=True
-)
+section_heading("08", "Export forecast")
 
 download_data = forecast_data.copy()
 
@@ -1037,7 +1253,7 @@ st.download_button(
 with st.expander("How does this prediction work?"):
 
     st.markdown("""
-    **Current forecasting method**
+    **CURRENT FORECASTING METHOD**
 
     This page currently uses a statistical baseline:
 
@@ -1048,7 +1264,7 @@ with st.expander("How does this prediction work?"):
     5. Produces estimates for the next 24 hours.
     6. Calculates an illustrative uncertainty range from recent residuals.
 
-    **Important limitations**
+    **IMPORTANT LIMITATIONS**
 
     - This is not a trained machine-learning model.
     - It does not currently use weather variables.
@@ -1056,7 +1272,7 @@ with st.expander("How does this prediction work?"):
     - Forecast quality depends on the quality and frequency of historical data.
     - The forecast should not be treated as an official air-quality warning.
 
-    **Planned model integration**
+    **PLANNED MODEL INTEGRATION**
 
     The baseline can later be replaced with your team's trained model,
     using historical AQI, PM2.5, PM10, temperature, humidity, wind speed
@@ -1068,10 +1284,23 @@ with st.expander("How does this prediction work?"):
 # FOOTER
 # ============================================================
 
-st.markdown("""
-<div class="footer">
-    AEROSENSE AI · AIR QUALITY INTELLIGENCE PLATFORM<br>
-    Forecasts are estimates for informational and project demonstration
-    purposes. Refer to official monitoring sources for current AQI.
-</div>
-""", unsafe_allow_html=True)
+st.write("")
+st.divider()
+
+f1, f2 = st.columns(2)
+
+with f1:
+    st.markdown(
+        '<div class="footer-text">'
+        'AEROSENSE AI · ENVIRONMENTAL INTELLIGENCE'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+with f2:
+    st.markdown(
+        '<div class="footer-text" style="text-align:right;">'
+        'DATA · ANALYTICS · PREDICTION'
+        '</div>',
+        unsafe_allow_html=True
+    )

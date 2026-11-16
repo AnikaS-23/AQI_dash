@@ -1,6 +1,9 @@
 
 import streamlit as st
-from pathlib import Path
+
+# =========================================================
+# CONFIGURATION
+# =========================================================
 
 st.set_page_config(
     page_title="AeroSense AI",
@@ -9,126 +12,489 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Load CSS
-BASE_DIR = Path(__file__).resolve().parent
-
-for folder in ["assets", "assests"]:
-    css_file = BASE_DIR / folder / "style.css"
-    if css_file.exists():
-        st.markdown(
-            f"<style>{css_file.read_text(encoding='utf-8')}</style>",
-            unsafe_allow_html=True
-        )
-        break
-
-# Header
-st.markdown("""
-<div class="topbar">
-    <div>
-        <div class="brand">AEROSENSE <span>AI</span></div>
-        <div class="brand-sub">AIR QUALITY INTELLIGENCE PLATFORM</div>
-    </div>
-    <div class="system-status">● SYSTEM ONLINE</div>
-</div>
-""", unsafe_allow_html=True)
-
-# Hero
-st.markdown("""
-<div class="hero">
-    <div class="eyebrow">ENVIRONMENTAL INTELLIGENCE · BENGALURU</div>
-    <h1>See the air.<br><span>Understand the impact.</span></h1>
-    <p>
-        An intelligent platform to explore air quality, monitor
-        environmental conditions and understand weather patterns.
-    </p>
-</div>
-""", unsafe_allow_html=True)
+# =========================================================
+# GLOBAL DARK THEME
+# =========================================================
 
 st.markdown("""
-<div class="section-label">YOUR ENVIRONMENT, AT A GLANCE</div>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg: #080B0A;
+    --surface: #111815;
+    --surface2: #151F1A;
+    --border: #25372D;
+    --green: #8CCF9B;
+    --teal: #4CA99A;
+    --white: #EDF5EF;
+    --muted: #91A397;
+}
+
+.stApp {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.block-container {
+    max-width: 1450px;
+    padding-top: 2.4rem;
+    padding-bottom: 3rem;
+}
+
+/* SIDEBAR */
+
+section[data-testid="stSidebar"] {
+    background: #0B110E;
+    border-right: 1px solid #1D2C23;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #DCE9DF;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {
+    border-radius: 9px;
+    margin: 5px 0;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {
+    background: #1B2B21;
+}
+
+section[data-testid="stSidebar"] [aria-current="page"] {
+    background: #20352A;
+    border-left: 3px solid #8CCF9B;
+}
+
+/* TEXT */
+
+h1, h2, h3, h4 {
+    font-family: 'Manrope', sans-serif !important;
+    color: var(--white) !important;
+}
+
+p, li, label {
+    color: #C0CEC3;
+}
+
+.stCaption, [data-testid="stCaptionContainer"] {
+    color: var(--muted) !important;
+}
+
+/* BRAND */
+
+.brand {
+    font-family: 'Manrope', sans-serif;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #EDF5EF;
+}
+
+.brand-dot {
+    color: #8CCF9B;
+}
+
+.brand-sub {
+    color: #82978A;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+.status-pill {
+    display: inline-block;
+    color: #9AD8A7;
+    background: #14251A;
+    border: 1px solid #2D5639;
+    border-radius: 30px;
+    padding: 6px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* HERO */
+
+.hero-label {
+    color: #8CCF9B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+}
+
+.hero-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.12;
+    letter-spacing: -3px;
+    font-weight: 800;
+    color: #F0F7F1;
+    margin-top: 20px;
+}
+
+.hero-accent {
+    color: #8CCF9B;
+}
+
+.hero-description {
+    color: #9AABA0;
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 720px;
+}
+
+/* SECTION LABEL */
+
+.section-label {
+    color: #9ACBA3;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+/* CARDS */
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 16px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    border-color: #568B65;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    padding: 9px;
+}
+
+/* CARD TEXT */
+
+.card-index {
+    color: #83C995;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.card-icon {
+    font-size: 27px;
+}
+
+.card-description {
+    color: #93A59A;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.card-tag {
+    color: #79B98A;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+/* LOWER PANELS */
+
+.panel-description {
+    color: #9AABA0;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+/* DIVIDERS */
+
+hr {
+    border-color: #25372D !important;
+}
+
+/* METRICS */
+
+div[data-testid="stMetric"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #91A397;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #EAF5EC;
+}
+
+/* BUTTONS */
+
+.stButton > button {
+    background: #8CCF9B;
+    color: #08100B;
+    border: none;
+    border-radius: 9px;
+    font-weight: 700;
+}
+
+.stButton > button:hover {
+    background: #A7E0B1;
+    color: #08100B;
+}
+
+/* HIDE DEFAULT ELEMENTS */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+div[data-testid="stDecoration"] {
+    display: none;
+}
+
+/* FOOTER */
+
+.footer-text {
+    color: #71847A;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+}
+</style>
 """, unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns(3)
 
-with col1:
-    st.markdown("""
-    <div class="feature-card">
-        <div class="feature-icon">◉</div>
-        <div class="feature-title">Air Quality Monitoring</div>
-        <div class="feature-text">
-            Explore AQI levels, pollutant concentrations and
-            monitoring station data.
-        </div>
-        <div class="feature-tag">01 · MONITOR</div>
-    </div>
-    """, unsafe_allow_html=True)
+# =========================================================
+# TOP BRAND SECTION
+# =========================================================
 
-with col2:
-    st.markdown("""
-    <div class="feature-card">
-        <div class="feature-icon">☁</div>
-        <div class="feature-title">Weather Insights</div>
-        <div class="feature-text">
-            Understand temperature, humidity, wind and their
-            relationship with pollution.
-        </div>
-        <div class="feature-tag">02 · ANALYSE</div>
-    </div>
-    """, unsafe_allow_html=True)
+top_left, top_right = st.columns([3, 1])
 
-with col3:
-    st.markdown("""
-    <div class="feature-card">
-        <div class="feature-icon">⌁</div>
-        <div class="feature-title">AI Predictions</div>
-        <div class="feature-text">
-            Explore air-quality trends and short-term prediction
-            capabilities.
-        </div>
-        <div class="feature-tag">03 · PREDICT</div>
-    </div>
-    """, unsafe_allow_html=True)
+with top_left:
+    st.markdown(
+        '<div class="brand"><span class="brand-dot">●</span> AEROSENSE AI</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="brand-sub">AIR QUALITY INTELLIGENCE PLATFORM</div>',
+        unsafe_allow_html=True
+    )
 
-st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
+with top_right:
+    st.markdown(
+        '<div style="text-align:right; padding-top:10px;">'
+        '<span class="status-pill">● SYSTEM ONLINE</span></div>',
+        unsafe_allow_html=True
+    )
 
-left, right = st.columns([1.5, 1])
+st.write("")
+st.caption("ENVIRONMENTAL INTELLIGENCE  /  BENGALURU")
+st.divider()
 
-with left:
-    st.markdown("""
-    <div class="welcome-panel">
-        <div class="section-label">WELCOME TO AEROSENSE AI</div>
-        <h2>Cleaner insights.<br>Smarter decisions.</h2>
-        <p>
-            Explore environmental data through interactive
-            visualisations and meaningful insights.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
 
-with right:
-    st.markdown("""
-    <div class="info-panel">
-        <div class="section-label">PROJECT STATUS</div>
-        <h3>Development preview</h3>
-        <p>
-            This version uses illustrative sample data.
-            Actual team datasets and prediction models will
-            be integrated as they become available.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+# =========================================================
+# HERO SECTION
+# =========================================================
 
-st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+st.write("")
 
-st.page_link(
-    "pages/overview.py",
-    label="OPEN AIR QUALITY OVERVIEW →",
-    icon="🌍",
-    use_container_width=True
+st.markdown(
+    '<div class="hero-label">ENVIRONMENTAL DATA  ·  ANALYTICS  ·  INTELLIGENCE</div>',
+    unsafe_allow_html=True
 )
 
 st.markdown("""
-<div class="footer">
-    AEROSENSE AI &nbsp; · &nbsp; AIR QUALITY & WEATHER INTELLIGENCE
+<div class="hero-title">
+    See the air.<br>
+    Understand <span class="hero-accent">the impact.</span>
 </div>
 """, unsafe_allow_html=True)
+
+st.write("")
+
+st.markdown("""
+<div class="hero-description">
+    An intelligent environmental platform designed to explore
+    air quality, monitor atmospheric conditions and uncover
+    the relationship between weather and pollution.
+    <br><br>
+    From real-time insights to predictive analysis,
+    understand the environment through data.
+</div>
+""", unsafe_allow_html=True)
+
+st.write("")
+st.write("")
+
+
+# =========================================================
+# FEATURE CARDS
+# =========================================================
+
+st.markdown(
+    '<div class="section-label">01 / EXPLORE THE PLATFORM</div>',
+    unsafe_allow_html=True
+)
+
+st.write("")
+
+c1, c2, c3 = st.columns(3, gap="medium")
+
+with c1:
+    with st.container(border=True):
+        st.markdown(
+            '<div class="card-index">01 — MONITOR</div>',
+            unsafe_allow_html=True
+        )
+        st.write("")
+        st.markdown('<div class="card-icon">◉</div>', unsafe_allow_html=True)
+        st.subheader("Air Quality")
+        st.markdown("""
+        <div class="card-description">
+        Explore AQI levels, pollutant concentrations and
+        monitoring station data. Identify patterns in
+        environmental pollution.
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("")
+        st.markdown(
+            '<div class="card-tag">AIR QUALITY ANALYSIS ↗</div>',
+            unsafe_allow_html=True
+        )
+
+with c2:
+    with st.container(border=True):
+        st.markdown(
+            '<div class="card-index">02 — ANALYSE</div>',
+            unsafe_allow_html=True
+        )
+        st.write("")
+        st.markdown('<div class="card-icon">☁</div>', unsafe_allow_html=True)
+        st.subheader("Weather Insights")
+        st.markdown("""
+        <div class="card-description">
+        Study temperature, humidity, wind patterns and
+        their relationship with changing air-quality
+        conditions.
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("")
+        st.markdown(
+            '<div class="card-tag">WEATHER INTELLIGENCE ↗</div>',
+            unsafe_allow_html=True
+        )
+
+with c3:
+    with st.container(border=True):
+        st.markdown(
+            '<div class="card-index">03 — PREDICT</div>',
+            unsafe_allow_html=True
+        )
+        st.write("")
+        st.markdown('<div class="card-icon">⌁</div>', unsafe_allow_html=True)
+        st.subheader("AQI Predictions")
+        st.markdown("""
+        <div class="card-description">
+        Examine historical air-quality trends and
+        explore short-term forecasting through
+        data-driven models.
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("")
+        st.markdown(
+            '<div class="card-tag">PREDICTIVE ANALYTICS ↗</div>',
+            unsafe_allow_html=True
+        )
+
+
+# =========================================================
+# PROJECT INFORMATION
+# =========================================================
+
+st.write("")
+st.write("")
+
+st.markdown(
+    '<div class="section-label">02 / ABOUT THE PLATFORM</div>',
+    unsafe_allow_html=True
+)
+
+st.write("")
+
+left, right = st.columns([1.35, 1], gap="large")
+
+with left:
+    with st.container(border=True):
+        st.markdown("### Environmental intelligence, in one place")
+
+        st.markdown("""
+        <div class="panel-description">
+        AeroSense AI brings environmental monitoring,
+        air-quality analysis and predictive insights together
+        in a unified platform.
+
+        <br><br>
+
+        Explore pollutant behaviour, understand weather
+        patterns, examine health implications and discover
+        meaningful trends hidden within environmental data.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.write("")
+        st.markdown("**ONE PLATFORM. MULTIPLE ENVIRONMENTAL INSIGHTS.**")
+
+with right:
+    with st.container(border=True):
+        st.markdown("### Platform modules")
+
+        modules = [
+            ("01", "AQI Analysis", "Pollutant and AQI exploration"),
+            ("02", "Weather Insights", "Atmospheric patterns"),
+            ("03", "AQI Prediction", "Forecasting and trends"),
+            ("04", "Health Advisory", "Health-related insights"),
+            ("05", "Overview", "Environmental dashboard")
+        ]
+
+        for number, name, description in modules:
+            a, b = st.columns([0.18, 1])
+
+            with a:
+                st.markdown(
+                    f'<div class="card-index">{number}</div>',
+                    unsafe_allow_html=True
+                )
+
+            with b:
+                st.markdown(f"**{name}**")
+                st.caption(description)
+
+            st.divider()
+
+
+# =========================================================
+# FOOTER
+# =========================================================
+
+st.write("")
+st.divider()
+
+f1, f2 = st.columns(2)
+
+with f1:
+    st.markdown(
+        '<div class="footer-text">AEROSENSE AI · ENVIRONMENTAL INTELLIGENCE</div>',
+        unsafe_allow_html=True
+    )
+
+with f2:
+    st.markdown(
+        '<div class="footer-text" style="text-align:right;">'
+        'DATA · ANALYTICS · PREDICTION</div>',
+        unsafe_allow_html=True
+    )
