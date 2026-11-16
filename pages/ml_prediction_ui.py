@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 
@@ -14,229 +13,257 @@ def render_ml_prediction(
 
     st.divider()
 
-    # HEADER
-    st.markdown(
-        """
-        <div style="margin-bottom:15px;">
-            <div style="color:#9ACBA3;font-size:11px;
-                        font-weight:700;letter-spacing:2px;">
-                ML / RANDOM FOREST MODEL
-            </div>
-            <h2 style="color:#EDF5EF;">
-                Next-Hour AQI Prediction
-            </h2>
-            <p style="color:#91A397;font-size:13px;">
-                Machine learning prediction using current AQI
-                and weather conditions.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.title("🤖 AI-Based AQI Prediction")
+
+    st.write(
+        "Predict the Air Quality Index for the next hour "
+        "using our trained Random Forest Machine Learning model."
     )
 
     st.info(
-        "Enter the weather conditions to estimate AQI "
-        "for the next hour using our trained Random Forest model."
+        "The model uses the current AQI and weather conditions "
+        "to estimate the next-hour AQI."
     )
 
+    # --------------------------------------------------
+    # CURRENT CONDITIONS
+    # --------------------------------------------------
+
+    st.subheader("Current Air Quality")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric(
+            label="Current AQI",
+            value=f"{float(current_aqi):.2f}"
+        )
+
+    with col2:
+        st.write("**Latest Reading**")
+        st.write(str(timestamp))
+
+    st.divider()
+
+    # --------------------------------------------------
     # WEATHER INPUTS
-    col1, col2, col3, col4 = st.columns(4)
+    # --------------------------------------------------
+
+    st.subheader("Weather Conditions")
+
+    st.write(
+        "Enter the current weather conditions to generate "
+        "the next-hour prediction."
+    )
+
+    col1, col2 = st.columns(2)
 
     with col1:
         temperature = st.number_input(
             "Temperature (°C)",
-            min_value=-20.0,
+            min_value=-10.0,
             max_value=60.0,
             value=28.0,
-            step=0.5,
-            key="ml_temperature"
+            step=0.5
         )
 
-    with col2:
         humidity = st.number_input(
             "Humidity (%)",
             min_value=0.0,
             max_value=100.0,
             value=60.0,
-            step=1.0,
-            key="ml_humidity"
+            step=1.0
         )
 
-    with col3:
         wind_speed = st.number_input(
-            "Wind speed",
+            "Wind Speed",
             min_value=0.0,
+            max_value=100.0,
             value=5.0,
-            step=0.5,
-            key="ml_wind_speed"
+            step=0.5
         )
 
-    with col4:
+    with col2:
         rain = st.number_input(
             "Rain",
             min_value=0.0,
+            max_value=500.0,
             value=0.0,
-            step=0.1,
-            key="ml_rain"
+            step=0.5
+        )
+
+        prediction_time = pd.to_datetime(timestamp)
+
+        hour = prediction_time.hour
+        month = prediction_time.month
+
+        st.metric(
+            "Current Hour",
+            f"{hour}:00"
+        )
+
+        st.metric(
+            "Current Month",
+            month
         )
 
     st.caption(
-        "Weather values should use the same units and "
-        "measurement conventions as the training dataset."
+        "Hour and month are automatically taken from the latest "
+        "available AQI reading."
     )
 
+    st.divider()
+
+    # --------------------------------------------------
     # PREDICTION BUTTON
+    # --------------------------------------------------
+
     if st.button(
-        "Predict Next-Hour AQI",
-        key="random_forest_predict",
+        "🔮 Predict Next Hour AQI",
         use_container_width=True
     ):
 
         try:
-            with st.spinner("Running Random Forest prediction..."):
+            prediction = predict_next_hour(
+                aqi=float(current_aqi),
+                temperature=float(temperature),
+                humidity=float(humidity),
+                wind_speed=float(wind_speed),
+                rain=float(rain),
+                hour=int(hour),
+                month=int(month)
+            )
 
-                prediction = predict_next_hour(
-                    aqi=float(current_aqi),
-                    temperature=float(temperature),
-                    humidity=float(humidity),
-                    wind_speed=float(wind_speed),
-                    rain=float(rain),
-                    hour=int(timestamp.hour),
-                    month=int(timestamp.month)
-                )
+            category_result = get_aqi_category(prediction)
 
-            category, css_class = get_aqi_category(prediction)
+            # Supports both tuple and string category functions
+            if isinstance(category_result, tuple):
+                category = category_result[0]
+            else:
+                category = category_result
+
+            advisory = get_advisory(prediction)
 
             st.session_state["ml_prediction"] = prediction
             st.session_state["ml_category"] = category
-            st.session_state["ml_css_class"] = css_class
-            st.session_state["ml_advisory"] = get_advisory(prediction)
+            st.session_state["ml_advisory"] = advisory
 
-        except Exception as error:
-            st.error(f"Prediction failed: {error}")
+            st.session_state["ml_inputs"] = {
+                "temperature": temperature,
+                "humidity": humidity,
+                "wind_speed": wind_speed,
+                "rain": rain
+            }
 
+        except Exception as e:
+            st.error(f"Prediction failed: {e}")
+
+    # --------------------------------------------------
     # DISPLAY PREDICTION RESULT
+    # --------------------------------------------------
+
     if "ml_prediction" in st.session_state:
 
         prediction = st.session_state["ml_prediction"]
         category = st.session_state["ml_category"]
-        css_class = st.session_state["ml_css_class"]
         advisory = st.session_state["ml_advisory"]
 
-        st.markdown(
-            f"""
-            <div class="panel">
+        st.divider()
 
-                <div class="panel-caption">
-                    RANDOM FOREST NEXT-HOUR PREDICTION
-                </div>
+        st.subheader("📊 Prediction Result")
 
-                <div style="font-size:46px;
-                            font-weight:800;
-                            color:#8CCF9B;
-                            font-family:Manrope;">
-                    {prediction:.2f}
-                </div>
-
-                <span class="status-pill {css_class}">
-                    {category}
-                </span>
-
-                <p style="color:#C0CEC3;
-                          font-size:14px;
-                          line-height:1.8;
-                          margin-top:18px;">
-                    {advisory}
-                </p>
-
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.metric(
+            label="Predicted AQI for Next Hour",
+            value=f"{prediction:.2f}"
         )
 
-    # MODEL PERFORMANCE
+        st.success(f"Predicted AQI Category: {category}")
+
+        st.subheader("Health Advisory")
+
+        st.info(advisory)
+
+        st.caption(
+            "This is a machine learning estimate for the next hour, "
+            "not a live measured AQI reading."
+        )
+
+        # Compare current and predicted AQI
+        difference = prediction - float(current_aqi)
+
+        st.subheader("AQI Comparison")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric(
+                "Current AQI",
+                f"{float(current_aqi):.2f}"
+            )
+
+        with col2:
+            st.metric(
+                "Predicted AQI",
+                f"{prediction:.2f}"
+            )
+
+        with col3:
+            st.metric(
+                "AQI Change",
+                f"{difference:+.2f}"
+            )
+
+    # --------------------------------------------------
+    # MODEL INFORMATION
+    # --------------------------------------------------
+
     st.divider()
 
-    st.markdown(
-        '<div class="section-label">'
-        'MODEL PERFORMANCE / EVALUATION'
-        '</div>',
-        unsafe_allow_html=True
+    st.subheader("🧠 Machine Learning Model")
+
+    st.write(
+        "The prediction is generated using a trained "
+        "Random Forest Regressor."
     )
 
-    m1, m2, m3 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
 
-    m1.metric("MAE", "3.13")
-    m2.metric("RMSE", "5.39")
-    m3.metric("R² Score", "0.9976")
+    with col1:
+        st.metric("Model", "Random Forest")
+
+    with col2:
+        st.metric("Test MAE", "3.13")
+
+    with col3:
+        st.metric("R² Score", "0.9976")
+
+    st.write("**Model Performance**")
+
+    st.write(
+        "- Mean Absolute Error (MAE): 3.13"
+    )
+
+    st.write(
+        "- Root Mean Squared Error (RMSE): 5.39"
+    )
+
+    st.write(
+        "- R² Score: 0.9976"
+    )
+
+    st.write(
+        "- Model Size: Approximately 3.42 MB"
+    )
+
+    st.write("**Input Features Used**")
+
+    st.write(
+        "AQI, Temperature, Humidity, Wind Speed, "
+        "Rain, Hour and Month."
+    )
 
     st.caption(
-        "Test-set evaluation: 128,198 observations. "
-        "Persistence baseline MAE: 6.16. "
-        "Lower MAE and RMSE indicate better prediction accuracy."
+        "The model was evaluated using a chronological "
+        "80:20 train-test split. Performance metrics are "
+        "from the held-out test set."
     )
-
-    # FEATURE IMPORTANCE
-    with st.expander("Explore model feature importance"):
-
-        try:
-            model = load_model()
-
-            importance = pd.DataFrame({
-                "Feature": model.feature_names_in_,
-                "Importance": model.feature_importances_
-            }).sort_values(
-                by="Importance",
-                ascending=False
-            )
-
-            st.bar_chart(
-                importance.set_index("Feature")
-            )
-
-            st.dataframe(
-                importance.round(4),
-                use_container_width=True,
-                hide_index=True
-            )
-
-            st.caption(
-                "Feature importance indicates how the model uses "
-                "input variables for prediction. It does not "
-                "establish causation."
-            )
-
-        except Exception as error:
-            st.error(
-                f"Feature importance unavailable: {error}"
-            )
-
-    # MODEL INFORMATION
-    with st.expander("About the Random Forest model"):
-
-        st.markdown(
-            """
-            **Algorithm:** Random Forest Regressor
-
-            **Prediction target:** AQI one hour ahead.
-
-            **Input features:**
-            - Current AQI
-            - Temperature
-            - Humidity
-            - Wind speed
-            - Rainfall
-            - Hour
-            - Month
-
-            **Training methodology:**
-            - Chronological 80:20 train-test split.
-            - Time ordering preserved within each monitoring station.
-            - Next-hour target generated using consecutive hourly readings.
-
-            **Important:** The Random Forest produces a next-hour
-            estimate. It does not generate the separate 24-hour
-            statistical baseline forecast displayed elsewhere
-            on the dashboard.
-            """
-        )
