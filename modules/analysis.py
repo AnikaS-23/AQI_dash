@@ -1,27 +1,46 @@
 import pandas as pd
-import plotly.express as px
-import streamlit as st
 
-st.title("Bengaluru Air Quality")
 
-df = pd.read_csv("data/processed/airscope_sample.csv")
-df = df[df["city"] == "Bengaluru"].copy()
-df["time"] = pd.to_datetime(df["time"], errors="coerce")
-df["aqi"] = pd.to_numeric(df["aqi"], errors="coerce")
-df = df.dropna(subset=["time", "aqi"])
+def get_city_statistics(df):
+    return df.groupby("city")["aqi"].agg(
+        ["count", "mean", "median", "min", "max"]
+    ).round(2)
 
-if df.empty:
-    st.warning("No Bengaluru AQI rows were found in the CSV.")
-else:
-    station = st.selectbox("Choose a station", sorted(df["name"].dropna().unique()))
-    station_df = df[df["name"] == station].sort_values("time")
 
-    chart = px.line(
-        station_df,
-        x="time",
-        y="aqi",
-        title=f"AQI over time — {station}",
-        labels={"time": "Time", "aqi": "AQI"},
+def get_aqi_correlation(df):
+    features = [
+        "aqi", "pm2_5", "pm10", "no2", "so2", "co",
+        "o3", "dust", "temperature", "humidity",
+        "wind_speed", "rain"
+    ]
+    return df[features].corr()["aqi"].sort_values(
+        ascending=False
+    ).round(3)
+
+
+def get_feature_importance(model):
+    importance = pd.DataFrame({
+        "Feature": model.feature_names_in_,
+        "Importance": model.feature_importances_
+    })
+    return importance.sort_values(
+        by="Importance", ascending=False
     )
-    st.plotly_chart(chart, use_container_width=True)
-    
+
+
+def get_seasonal_aqi(df):
+    return df.groupby(
+        ["city", "season"], observed=True
+    )["aqi"].mean().unstack().round(2)
+
+
+def get_monthly_aqi(df):
+    return df.groupby(
+        ["city", "month"]
+    )["aqi"].mean().unstack().round(2)
+
+
+def get_monthly_counts(df):
+    return df.groupby(
+        ["city", "month"]
+    )["aqi"].count().unstack().fillna(0).astype(int)
