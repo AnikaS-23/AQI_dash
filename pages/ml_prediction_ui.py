@@ -1,13 +1,22 @@
+```python
 import streamlit as st
 import pandas as pd
 
 from modules.predictions import predict_next_hour, load_model
 
 
-def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
-                         get_advisory):
+def render_ml_prediction(
+    current_aqi,
+    timestamp,
+    get_aqi_category,
+    get_advisory
+):
 
     st.divider()
+
+    # ========================================================
+    # HEADER
+    # ========================================================
 
     st.markdown(
         """
@@ -16,9 +25,11 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
                         font-weight:700;letter-spacing:2px;">
                 ML / RANDOM FOREST MODEL
             </div>
+
             <h2 style="color:#EDF5EF;">
                 Next-Hour AQI Prediction
             </h2>
+
             <p style="color:#91A397;font-size:13px;">
                 Machine learning prediction using current AQI
                 and weather conditions.
@@ -33,7 +44,9 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
         "for the next hour using our trained Random Forest model."
     )
 
+    # ========================================================
     # WEATHER INPUTS
+    # ========================================================
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -43,7 +56,8 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
             min_value=-20.0,
             max_value=60.0,
             value=28.0,
-            step=0.5
+            step=0.5,
+            key="ml_temperature"
         )
 
     with col2:
@@ -52,7 +66,8 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
             min_value=0.0,
             max_value=100.0,
             value=60.0,
-            step=1.0
+            step=1.0,
+            key="ml_humidity"
         )
 
     with col3:
@@ -60,7 +75,8 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
             "Wind speed",
             min_value=0.0,
             value=5.0,
-            step=0.5
+            step=0.5,
+            key="ml_wind_speed"
         )
 
     with col4:
@@ -68,7 +84,8 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
             "Rain",
             min_value=0.0,
             value=0.0,
-            step=0.1
+            step=0.1,
+            key="ml_rain"
         )
 
     st.caption(
@@ -76,7 +93,9 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
         "measurement conventions as the training dataset."
     )
 
-    # PREDICTION
+    # ========================================================
+    # PREDICTION BUTTON
+    # ========================================================
 
     if st.button(
         "Predict Next-Hour AQI",
@@ -85,8 +104,9 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
     ):
 
         try:
-
-            with st.spinner("Running Random Forest prediction..."):
+            with st.spinner(
+                "Running Random Forest prediction..."
+            ):
 
                 prediction = predict_next_hour(
                     aqi=float(current_aqi),
@@ -98,29 +118,35 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
                     month=int(timestamp.month)
                 )
 
-            category, css_class = get_aqi_category(prediction)
+            category, css_class = get_aqi_category(
+                prediction
+            )
 
             st.session_state["ml_prediction"] = prediction
             st.session_state["ml_category"] = category
             st.session_state["ml_css_class"] = css_class
-
-        except Exception as error:
-
-            st.error(
-                f"Prediction failed: {error}"
+            st.session_state["ml_advisory"] = get_advisory(
+                prediction
             )
 
-    # DISPLAY RESULT
+        except Exception as error:
+            st.error(f"Prediction failed: {error}")
+
+    # ========================================================
+    # PREDICTION RESULT
+    # ========================================================
 
     if "ml_prediction" in st.session_state:
 
         prediction = st.session_state["ml_prediction"]
         category = st.session_state["ml_category"]
         css_class = st.session_state["ml_css_class"]
+        advisory = st.session_state["ml_advisory"]
 
         st.markdown(
             f"""
             <div class="panel">
+
                 <div class="panel-caption">
                     RANDOM FOREST NEXT-HOUR PREDICTION
                 </div>
@@ -140,23 +166,24 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
                           font-size:14px;
                           line-height:1.8;
                           margin-top:18px;">
-                    {get_advisory(prediction)}
+                    {advisory}
                 </p>
+
             </div>
             """,
             unsafe_allow_html=True
         )
 
+    # ========================================================
     # MODEL PERFORMANCE
+    # ========================================================
 
     st.divider()
 
     st.markdown(
-        """
-        <div class="section-label">
-            MODEL PERFORMANCE / EVALUATION
-        </div>
-        """,
+        '<div class="section-label">'
+        'MODEL PERFORMANCE / EVALUATION'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -172,27 +199,25 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
         "Lower MAE and RMSE indicate better prediction accuracy."
     )
 
+    # ========================================================
     # FEATURE IMPORTANCE
+    # ========================================================
 
     with st.expander("Explore model feature importance"):
 
         try:
-
             model = load_model()
 
             importance = pd.DataFrame({
                 "Feature": model.feature_names_in_,
                 "Importance": model.feature_importances_
-            })
-
-            importance = importance.sort_values(
-                "Importance",
+            }).sort_values(
+                by="Importance",
                 ascending=False
             )
 
             st.bar_chart(
-                importance.set_index("Feature"),
-                horizontal=True
+                importance.set_index("Feature")
             )
 
             st.dataframe(
@@ -203,17 +228,18 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
 
             st.caption(
                 "Feature importance indicates how the model uses "
-                "input variables for prediction. It does not establish "
-                "causation."
+                "input variables for prediction. It does not "
+                "establish causation."
             )
 
         except Exception as error:
-
             st.error(
                 f"Feature importance unavailable: {error}"
             )
 
-    # METHODOLOGY
+    # ========================================================
+    # MODEL INFORMATION
+    # ========================================================
 
     with st.expander("About the Random Forest model"):
 
@@ -239,6 +265,8 @@ def render_ml_prediction(current_aqi, timestamp, get_aqi_category,
 
             **Important:** The Random Forest produces a next-hour
             estimate. It does not generate the separate 24-hour
-            statistical baseline forecast displayed above.
+            statistical baseline forecast displayed elsewhere
+            on the dashboard.
             """
         )
+```
