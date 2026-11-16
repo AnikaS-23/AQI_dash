@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # ============================================================
-# PAGE CONFIGURATION
+# AEROSENSE AI — HEALTH ADVISORY
 # ============================================================
 
 st.set_page_config(
@@ -14,171 +14,392 @@ st.set_page_config(
 )
 
 # ============================================================
-# CUSTOM STYLING
+# GLOBAL HOMEPAGE THEME — EXACT PALETTE
 # ============================================================
 
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif;
+:root {
+    --bg: #080B0A;
+    --surface: #111815;
+    --surface2: #151F1A;
+    --border: #25372D;
+    --green: #8CCF9B;
+    --teal: #4CA99A;
+    --white: #EDF5EF;
+    --muted: #91A397;
+    --text: #C0CEC3;
 }
 
 .stApp {
-    background: #101411;
-    color: #E8EEE9;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
 }
 
 .block-container {
-    padding-top: 2rem;
+    max-width: 1450px;
+    padding-top: 2.4rem;
     padding-bottom: 3rem;
-    max-width: 1250px;
+}
+
+/* SIDEBAR */
+
+section[data-testid="stSidebar"] {
+    background: #0B110E;
+    border-right: 1px solid #1D2C23;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #DCE9DF;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {
+    border-radius: 9px;
+    margin: 5px 0;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {
+    background: #1B2B21;
+}
+
+section[data-testid="stSidebar"] [aria-current="page"] {
+    background: #20352A;
+    border-left: 3px solid #8CCF9B;
+}
+
+/* TEXT */
+
+h1, h2, h3, h4 {
+    font-family: 'Manrope', sans-serif !important;
+    color: var(--white) !important;
 }
 
 h1, h2, h3 {
+    font-weight: 800;
+}
+
+p, li, label {
+    color: #C0CEC3;
+}
+
+.stCaption, [data-testid="stCaptionContainer"] {
+    color: var(--muted) !important;
+}
+
+/* BRAND */
+
+.brand {
     font-family: 'Manrope', sans-serif;
-    color: #EDF4EF;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #EDF5EF;
 }
 
-.hero {
-    background: linear-gradient(120deg, #1B2921, #17221C);
-    border: 1px solid #30463A;
-    border-radius: 18px;
-    padding: 30px;
-    margin-bottom: 28px;
+.brand-dot {
+    color: #8CCF9B;
 }
 
-.hero-tag {
-    color: #9CC9A8;
-    font-size: 12px;
+.brand-sub {
+    color: #82978A;
+    font-size: 11px;
     letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+.status-pill {
+    display: inline-block;
+    color: #9AD8A7;
+    background: #14251A;
+    border: 1px solid #2D5639;
+    border-radius: 30px;
+    padding: 6px 12px;
+    font-size: 10px;
     font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* HERO */
+
+.hero-label {
+    color: #8CCF9B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
 }
 
 .hero-title {
-    font-size: 34px;
-    font-weight: 800;
-    margin-top: 12px;
-    color: #F1F7F2;
-}
-
-.hero-subtitle {
-    color: #AABBB0;
-    font-size: 15px;
-    margin-top: 8px;
-}
-
-.section-heading {
     font-family: 'Manrope', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: #EAF2EC;
-    margin-top: 28px;
-    margin-bottom: 5px;
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.12;
+    letter-spacing: -3px;
+    font-weight: 800;
+    color: #F0F7F1;
+    margin-top: 20px;
 }
 
-.section-caption {
-    color: #91A197;
-    font-size: 13px;
-    margin-bottom: 18px;
+.hero-accent {
+    color: #8CCF9B;
 }
+
+.hero-description {
+    color: #9AABA0;
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 720px;
+}
+
+/* SECTION LABEL */
+
+.section-label {
+    color: #9ACBA3;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-top: 30px;
+    margin-bottom: 16px;
+}
+
+/* CARDS */
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 16px;
+    transition: border-color 0.2s ease;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    border-color: #568B65;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    padding: 9px;
+}
+
+/* CUSTOM PANELS */
 
 .panel {
-    background: #18211B;
-    border: 1px solid #2D3D32;
-    border-radius: 15px;
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 16px;
     padding: 22px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.panel:hover {
+    border-color: #568B65;
 }
 
 .panel-label {
-    color: #91B69B;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    margin-bottom: 10px;
-}
-
-.metric-value {
-    color: #EAF4EC;
-    font-family: 'Manrope', sans-serif;
-    font-size: 30px;
+    color: #8CCF9B;
+    font-size: 10px;
     font-weight: 800;
+    letter-spacing: 1.7px;
+    margin-bottom: 12px;
 }
 
-.metric-caption {
-    color: #93A398;
-    font-size: 12px;
-    margin-top: 4px;
+.panel-title {
+    color: #EDF5EF;
+    font-family: 'Manrope', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
 }
 
-.muted {
-    color: #A8B7AC;
-    font-size: 14px;
-    line-height: 1.7;
-}
-
-.info-note {
-    background: #1C2A21;
-    border-left: 3px solid #79A989;
-    border-radius: 8px;
-    padding: 14px 17px;
-    color: #C3D4C8;
+.panel-description {
+    color: #91A397;
     font-size: 13px;
-    margin: 12px 0;
+    line-height: 1.8;
 }
+
+/* METRICS */
 
 div[data-testid="stMetric"] {
-    background: #18211B;
-    border: 1px solid #2D3D32;
-    padding: 18px;
-    border-radius: 13px;
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 12px;
+    padding: 15px;
 }
 
 div[data-testid="stMetricLabel"] {
-    color: #9EAEA2;
+    color: #91A397;
 }
 
 div[data-testid="stMetricValue"] {
-    color: #EAF4EC;
+    color: #EAF5EC;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
 }
 
-.stButton > button {
-    background: #709B7B;
-    color: #101711;
-    border: none;
-    border-radius: 9px;
-    font-weight: 700;
-    padding: 10px 20px;
-}
-
-.stButton > button:hover {
-    background: #8BB797;
-    color: #101711;
-}
+/* INPUTS */
 
 .stSelectbox label,
 .stSlider label,
 .stNumberInput label,
-.stTextArea label {
-    color: #D6E2D9 !important;
+.stTextArea label,
+.stTextInput label {
+    color: #EDF5EF !important;
+    font-weight: 600;
 }
+
+.stSelectbox div[data-baseweb="select"] > div,
+.stTextInput input,
+.stNumberInput input {
+    background: #151F1A !important;
+    color: #EDF5EF !important;
+    border-color: #25372D !important;
+    border-radius: 9px;
+}
+
+.stCheckbox label {
+    color: #C0CEC3 !important;
+}
+
+div[data-baseweb="popover"] {
+    background: #111815;
+}
+
+/* BUTTONS */
+
+.stButton > button,
+.stDownloadButton > button {
+    background: #8CCF9B;
+    color: #08100B;
+    border: none;
+    border-radius: 9px;
+    font-weight: 700;
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    background: #A7E0B1;
+    color: #08100B;
+}
+
+/* EXPANDERS */
+
+div[data-testid="stExpander"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 12px;
+}
+
+div[data-testid="stExpander"] summary {
+    color: #EDF5EF;
+}
+
+/* DATAFRAME */
+
+div[data-testid="stDataFrame"] {
+    border: 1px solid #25372D;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* ALERTS */
+
+div[data-testid="stAlert"] {
+    background: #151F1A;
+    border: 1px solid #25372D;
+    border-radius: 12px;
+}
+
+/* PROGRESS */
+
+.stProgress > div > div > div {
+    background: #8CCF9B;
+}
+
+/* SLIDER */
+
+.stSlider [data-baseweb="slider"] div[role="slider"] {
+    background-color: #8CCF9B;
+}
+
+/* CHARTS */
+
+div[data-testid="stVegaLiteChart"],
+div[data-testid="stArrowVegaLiteChart"] {
+    background: #111815;
+    border: 1px solid #25372D;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+/* DIVIDERS */
 
 hr {
-    border-color: #2D3D32;
+    border-color: #25372D !important;
 }
 
-.footer {
-    text-align: center;
-    color: #74867A;
-    font-size: 12px;
-    padding-top: 25px;
-    border-top: 1px solid #29372D;
-    margin-top: 35px;
+/* HIDE DEFAULT ELEMENTS */
+
+#MainMenu {
+    visibility: hidden;
 }
+
+footer {
+    visibility: hidden;
+}
+
+div[data-testid="stDecoration"] {
+    display: none;
+}
+
+/* FOOTER */
+
+.footer-text {
+    color: #71847A;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+}
+
 </style>
 """, unsafe_allow_html=True)
+
+
+# ============================================================
+# REUSABLE PAGE ELEMENTS
+# ============================================================
+
+def section_heading(number, title, caption=None):
+    caption_html = (
+        f'<div style="color:#91A397;font-size:13px;'
+        f'margin-top:-8px;margin-bottom:18px;">{caption}</div>'
+        if caption else ""
+    )
+
+    st.markdown(
+        f"""
+        <div class="section-label">
+            {number} / {title.upper()}
+        </div>
+        {caption_html}
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def info_panel(label, title=None, description=None, color=None):
+    st.markdown(
+        f"""
+        <div class="panel">
+            <div class="panel-label">{label}</div>
+            <div class="panel-title" style="color:{color or '#EDF5EF'};">
+                {title or ''}
+            </div>
+            <div class="panel-description">
+                {description or ''}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -245,31 +466,91 @@ def get_health_advice(category):
 
 
 # ============================================================
-# HEADER
+# HEADER — HOMEPAGE STYLE
 # ============================================================
 
-st.markdown("""
-<div class="hero">
-    <div class="hero-tag">AEROSENSE AI / HEALTH INTELLIGENCE</div>
-    <div class="hero-title">Health Advisory</div>
-    <div class="hero-subtitle">
-        Understand how air quality affects health, identify pollutant
-        patterns and explore practical exposure precautions.
+header_col, status_col = st.columns([3, 1])
+
+with header_col:
+    st.markdown(
+        """
+        <div class="brand">
+            <span class="brand-dot">●</span> AEROSENSE AI
+        </div>
+        <div class="brand-sub">
+            AIR QUALITY INTELLIGENCE PLATFORM
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with status_col:
+    st.markdown(
+        """
+        <div style="text-align:right;padding-top:10px;">
+            <span class="status-pill">● HEALTH INTELLIGENCE</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+st.write("")
+st.caption("ENVIRONMENTAL INTELLIGENCE  /  HEALTH & EXPOSURE")
+st.divider()
+
+
+# ============================================================
+# HERO SECTION — HOMEPAGE STYLE
+# ============================================================
+
+st.write("")
+
+st.markdown(
+    """
+    <div class="hero-label">
+        HEALTH · POLLUTANTS · EXPOSURE INSIGHTS
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="hero-title">
+        Understand the air.<br>
+        <span class="hero-accent">Protect your health.</span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.write("")
+
+st.markdown(
+    """
+    <div class="hero-description">
+        <p>
+            Explore how air quality affects health, identify pollutant
+            patterns and discover practical exposure precautions through
+            an integrated health intelligence dashboard.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.write("")
+st.write("")
 
 
 # ============================================================
 # FEATURE 1: AQI HEALTH ASSESSMENT
 # ============================================================
 
-st.markdown('<div class="section-heading">01 / AQI health assessment</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Explore the health implications of different AQI levels.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "01",
+    "AQI health assessment",
+    "Explore the health implications of different AQI levels."
 )
 
 aqi_value = st.slider(
@@ -291,30 +572,29 @@ with col2:
     st.metric("AIR QUALITY CATEGORY", category)
 
 with col3:
-    st.metric("HEALTH RISK LEVEL",
-              "Low" if aqi_value <= 100 else
-              "Moderate" if aqi_value <= 200 else
-              "High")
+    st.metric(
+        "HEALTH RISK LEVEL",
+        "Low" if aqi_value <= 100 else
+        "Moderate" if aqi_value <= 200 else
+        "High"
+    )
 
-st.markdown(f"""
-<div class="panel">
-    <div class="panel-label">CURRENT ASSESSMENT</div>
-    <h2 style="color:{category_color};">{category}</h2>
-    <p class="muted">{description}</p>
-</div>
-""", unsafe_allow_html=True)
+info_panel(
+    "CURRENT ASSESSMENT",
+    category,
+    description,
+    category_color
+)
 
 
 # ============================================================
 # FEATURE 2: PERSONAL HEALTH ADVISORY
 # ============================================================
 
-st.markdown('<div class="section-heading">02 / Personalised health advisory</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Explore precautions based on individual sensitivity.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "02",
+    "Personalised health advisory",
+    "Explore precautions based on individual sensitivity."
 )
 
 sensitivity = st.selectbox(
@@ -337,14 +617,11 @@ if sensitivity != "General population":
         "Consider limiting outdoor exposure when pollution levels are high."
     ]
 
-st.markdown('<div class="panel">', unsafe_allow_html=True)
-
 st.markdown("**Recommended precautions**")
 
-for item in advice:
-    st.markdown(f"- {item}")
-
-st.markdown("</div>", unsafe_allow_html=True)
+with st.container(border=True):
+    for item in advice:
+        st.markdown(f"- {item}")
 
 st.caption(
     "These are general educational precautions, not a personal medical diagnosis. "
@@ -356,12 +633,10 @@ st.caption(
 # FEATURE 3: EXPOSURE ESTIMATOR
 # ============================================================
 
-st.markdown('<div class="section-heading">03 / Exposure estimator</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Estimate time spent in different environments.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "03",
+    "Exposure estimator",
+    "Estimate time spent in different environments."
 )
 
 col1, col2 = st.columns(2)
@@ -387,7 +662,9 @@ with col2:
 total_hours = outdoor_hours + indoor_hours
 
 if total_hours > 24:
-    st.warning("Your combined exposure time exceeds 24 hours. Please adjust the values.")
+    st.warning(
+        "Your combined exposure time exceeds 24 hours. Please adjust the values."
+    )
 else:
     outdoor_share = (
         outdoor_hours / total_hours * 100
@@ -404,24 +681,20 @@ else:
 
     st.progress(int(outdoor_share))
 
-    st.markdown("""
-    <div class="info-note">
-        This tool describes your entered time distribution. It does not
-        calculate an individual's actual inhaled pollution dose.
-    </div>
-    """, unsafe_allow_html=True)
+    st.info(
+        "This tool describes your entered time distribution. It does not "
+        "calculate an individual's actual inhaled pollution dose."
+    )
 
 
 # ============================================================
 # FEATURE 4: AQI TREND TRACKER
 # ============================================================
 
-st.markdown('<div class="section-heading">04 / AQI trend tracker</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Enter recent AQI readings to inspect changes over time.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "04",
+    "AQI trend tracker",
+    "Enter recent AQI readings to inspect changes over time."
 )
 
 trend_input = st.text_input(
@@ -437,7 +710,9 @@ try:
         if x.strip()
     ]
 
-    if not trend_values or any(x < 0 or x > 500 for x in trend_values):
+    if not trend_values or any(
+        x < 0 or x > 500 for x in trend_values
+    ):
         raise ValueError
 
     trend_df = pd.DataFrame({
@@ -464,7 +739,7 @@ try:
 
     st.line_chart(
         trend_df.set_index("Reading")["AQI"],
-        color="#83B893"
+        color="#8CCF9B"
     )
 
     if change > 0:
@@ -475,19 +750,19 @@ try:
         st.info("The first and latest readings are equal.")
 
 except ValueError:
-    st.error("Enter valid AQI values between 0 and 500, separated by commas.")
+    st.error(
+        "Enter valid AQI values between 0 and 500, separated by commas."
+    )
 
 
 # ============================================================
 # FEATURE 5: POLLUTANT EXPLORER
 # ============================================================
 
-st.markdown('<div class="section-heading">05 / Pollutant explorer</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Understand the major pollutants commonly monitored in air-quality assessments.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "05",
+    "Pollutant explorer",
+    "Understand the major pollutants commonly monitored in air-quality assessments."
 )
 
 pollutants = {
@@ -524,35 +799,28 @@ selected_pollutant = st.selectbox(
 
 pollutant_name, pollutant_description = pollutants[selected_pollutant]
 
-st.markdown(f"""
-<div class="panel">
-    <div class="panel-label">POLLUTANT PROFILE</div>
-    <h2>{selected_pollutant}</h2>
-    <div style="color:#91B69B;font-weight:600;">{pollutant_name}</div>
-    <p class="muted">{pollutant_description}</p>
-</div>
-""", unsafe_allow_html=True)
+info_panel(
+    "POLLUTANT PROFILE",
+    selected_pollutant,
+    f"{pollutant_name} — {pollutant_description}"
+)
 
 
 # ============================================================
 # FEATURE 6: POLLUTANT CONTRIBUTION ANALYSIS
 # ============================================================
 
-st.markdown('<div class="section-heading">06 / Pollutant contribution analysis</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Compare pollutant sub-index values and their relative shares.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "06",
+    "Pollutant contribution analysis",
+    "Compare pollutant sub-index values and their relative shares."
 )
 
-st.markdown("""
-<div class="info-note">
-    Enter the pollutant sub-index values for a location. The dashboard
-    compares their relative shares among the values entered. These are
-    not official CPCB AQI contribution percentages.
-</div>
-""", unsafe_allow_html=True)
+st.info(
+    "Enter the pollutant sub-index values for a location. The dashboard "
+    "compares their relative shares among the values entered. These are "
+    "not official CPCB AQI contribution percentages."
+)
 
 col1, col2, col3 = st.columns(3)
 
@@ -627,7 +895,9 @@ entered_df = contribution_df[
 
 if len(entered_df) == 0:
 
-    st.info("Enter at least one pollutant sub-index value to view the analysis.")
+    st.info(
+        "Enter at least one pollutant sub-index value to view the analysis."
+    )
 
 else:
 
@@ -649,22 +919,13 @@ else:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric(
-            "Highest sub-index",
-            highest_pollutant
-        )
+        st.metric("Highest sub-index", highest_pollutant)
 
     with col2:
-        st.metric(
-            "Sub-index value",
-            f"{highest_value:.1f}"
-        )
+        st.metric("Sub-index value", f"{highest_value:.1f}")
 
     with col3:
-        st.metric(
-            "Relative share",
-            f"{highest_share:.1f}%"
-        )
+        st.metric("Relative share", f"{highest_share:.1f}%")
 
     st.markdown("**Relative pollutant comparison**")
 
@@ -674,7 +935,7 @@ else:
 
     st.bar_chart(
         chart_data,
-        color="#83B893"
+        color="#8CCF9B"
     )
 
     st.markdown("**Contribution breakdown**")
@@ -695,29 +956,23 @@ else:
         hide_index=True
     )
 
-    st.markdown(f"""
-    <div class="panel">
-        <div class="panel-label">KEY OBSERVATION</div>
-        <h3>{highest_pollutant} has the highest entered sub-index</h3>
-        <p class="muted">
-            Among the values entered, {highest_pollutant} has a sub-index
-            of {highest_value:.1f} and represents {highest_share:.1f}%
-            of their combined total.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    info_panel(
+        "KEY OBSERVATION",
+        f"{highest_pollutant} has the highest entered sub-index",
+        f"Among the values entered, {highest_pollutant} has a sub-index "
+        f"of {highest_value:.1f} and represents {highest_share:.1f}% "
+        "of their combined total."
+    )
 
 
 # ============================================================
 # FEATURE 7: DAILY PRECAUTION CHECKLIST
 # ============================================================
 
-st.markdown('<div class="section-heading">07 / Daily precaution checklist</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Track simple actions that can help reduce avoidable exposure.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "07",
+    "Daily precaution checklist",
+    "Track simple actions that can help reduce avoidable exposure."
 )
 
 checklist_items = [
@@ -747,12 +1002,10 @@ st.caption(
 # FEATURE 8: POPULATION VULNERABILITY
 # ============================================================
 
-st.markdown('<div class="section-heading">08 / Population vulnerability</div>',
-            unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-caption">Groups that may be more sensitive to changes in air quality.</div>',
-    unsafe_allow_html=True
+section_heading(
+    "08",
+    "Population vulnerability",
+    "Groups that may be more sensitive to changes in air quality."
 )
 
 vulnerability = {
@@ -769,12 +1022,26 @@ for group, explanation in vulnerability.items():
 
 
 # ============================================================
-# FOOTER
+# FOOTER — HOMEPAGE STYLE
 # ============================================================
 
-st.markdown("""
-<div class="footer">
-    AEROSENSE AI · HEALTH INTELLIGENCE MODULE<br>
-    Air quality insights for informed everyday decisions.
-</div>
-""", unsafe_allow_html=True)
+st.write("")
+st.divider()
+
+f1, f2 = st.columns(2)
+
+with f1:
+    st.markdown(
+        '<div class="footer-text">'
+        'AEROSENSE AI · ENVIRONMENTAL INTELLIGENCE'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+with f2:
+    st.markdown(
+        '<div class="footer-text" style="text-align:right;">'
+        'HEALTH · EXPOSURE · ADVISORY'
+        '</div>',
+        unsafe_allow_html=True
+    )

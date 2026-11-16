@@ -27,6 +27,365 @@ for folder in ["assets", "assests"]:
 
 
 # --------------------------------------------------
+# AEROSENSE AI DARK THEME
+# --------------------------------------------------
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg: #080B0A;
+    --surface: #111815;
+    --surface2: #151F1A;
+    --border: #26382E;
+    --green: #8CCF9B;
+    --teal: #4CA99A;
+    --white: #EDF5EF;
+    --muted: #91A397;
+}
+
+/* MAIN BACKGROUND */
+
+.stApp {
+    background: #080B0A !important;
+    color: #EDF5EF !important;
+    font-family: 'DM Sans', sans-serif;
+}
+
+[data-testid="stAppViewContainer"] {
+    background: #080B0A !important;
+}
+
+[data-testid="stHeader"] {
+    background: rgba(8, 11, 10, 0.95) !important;
+}
+
+.block-container {
+    max-width: 1450px;
+    padding-top: 2.3rem;
+    padding-bottom: 3rem;
+}
+
+/* SIDEBAR */
+
+section[data-testid="stSidebar"] {
+    background: #0B110E !important;
+    border-right: 1px solid #1F3025;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #DCE9DF;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {
+    border-radius: 9px;
+    margin: 5px 0;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {
+    background: #1B2B21;
+}
+
+section[data-testid="stSidebar"] [aria-current="page"] {
+    background: #20352A;
+    border-left: 3px solid #8CCF9B;
+}
+
+/* GENERAL TYPOGRAPHY */
+
+h1, h2, h3, h4 {
+    font-family: 'Manrope', sans-serif !important;
+    color: #EDF5EF !important;
+    font-weight: 700 !important;
+}
+
+p, li, label {
+    color: #C0CEC3;
+}
+
+[data-testid="stCaptionContainer"] {
+    color: #91A397 !important;
+}
+
+.stMarkdown {
+    color: #DCE9DF;
+}
+
+/* PAGE HEADER */
+
+.page-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 35px;
+    font-weight: 800;
+    letter-spacing: -1.3px;
+    color: #EDF5EF;
+    margin-bottom: 7px;
+}
+
+.page-subtitle {
+    color: #8CCF9B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.demo-label {
+    text-align: right;
+    color: #9AD8A7;
+    background: #14251A;
+    border: 1px solid #31563B;
+    border-radius: 30px;
+    padding: 9px 13px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: inline-block;
+    float: right;
+}
+
+/* SECTION HEADINGS */
+
+h3 {
+    font-size: 18px !important;
+    margin-top: 28px !important;
+    margin-bottom: 17px !important;
+}
+
+/* DASHBOARD PANELS */
+
+.dashboard-panel {
+    background: #111815;
+    border: 1px solid #26382E;
+    border-radius: 16px;
+    padding: 21px;
+    margin-bottom: 15px;
+    color: #EDF5EF;
+}
+
+.dashboard-panel strong {
+    color: #EAF4EC;
+}
+
+.dashboard-panel hr {
+    border-color: #293B30;
+}
+
+/* AQI PANEL */
+
+.aqi-panel {
+    text-align: center;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.big-aqi {
+    font-family: 'Manrope', sans-serif;
+    font-size: 76px;
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 1.2;
+    margin: 16px 0;
+}
+
+.aqi-badge {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin: 0 auto;
+}
+
+/* METRIC CARDS */
+
+.metric-box {
+    background: #111815;
+    border: 1px solid #26382E;
+    border-radius: 14px;
+    padding: 19px 16px;
+    min-height: 115px;
+    transition: border-color 0.2s ease;
+}
+
+.metric-box:hover {
+    border-color: #60966D;
+}
+
+.metric-name {
+    color: #91A397;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    margin-bottom: 13px;
+}
+
+.metric-number {
+    color: #EDF5EF;
+    font-family: 'Manrope', sans-serif;
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.metric-unit {
+    color: #7F9586;
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+/* HEALTH TIPS */
+
+.tip-row {
+    color: #B9C9BD;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 11px 0;
+    border-bottom: 1px solid #26382E;
+}
+
+.tip-row:last-child {
+    border-bottom: none;
+}
+
+/* DATAFRAME */
+
+[data-testid="stDataFrame"] {
+    border: 1px solid #26382E;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* INPUTS */
+
+.stSelectbox label,
+.stDateInput label,
+.stFileUploader label {
+    color: #C7D6CA !important;
+    font-weight: 600;
+}
+
+[data-testid="stFileUploader"] {
+    background: #111815;
+    border: 1px solid #26382E;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+[data-testid="stFileUploaderDropzone"] {
+    background: #151F1A;
+    border: 1px dashed #496C53;
+}
+
+[data-testid="stFileUploaderDropzone"] * {
+    color: #DCE9DF !important;
+}
+
+[data-baseweb="input"],
+[data-baseweb="select"] > div,
+[data-testid="stDateInput"] input {
+    background: #151F1A !important;
+    color: #EDF5EF !important;
+    border-color: #344A3A !important;
+}
+
+[data-baseweb="popover"] {
+    background: #111815 !important;
+}
+
+/* CHARTS */
+
+[data-testid="stVegaLiteChart"],
+[data-testid="stArrowVegaLiteChart"],
+[data-testid="stPlotlyChart"] {
+    background: #111815;
+    border-radius: 12px;
+}
+
+/* MAP */
+
+[data-testid="stDeckGlJsonChart"] {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* DIVIDERS */
+
+hr {
+    border-color: #26382E !important;
+}
+
+/* STREAMLIT METRICS */
+
+div[data-testid="stMetric"] {
+    background: #111815;
+    border: 1px solid #26382E;
+    border-radius: 13px;
+    padding: 15px;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #91A397;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #EDF5EF;
+}
+
+/* ALERTS */
+
+[data-testid="stAlert"] {
+    background: #142019;
+    border: 1px solid #35553D;
+    border-radius: 10px;
+}
+
+/* BUTTONS */
+
+.stButton > button {
+    background: #8CCF9B;
+    color: #08100B;
+    border: none;
+    border-radius: 9px;
+    font-weight: 700;
+}
+
+.stButton > button:hover {
+    background: #A7E0B1;
+    color: #08100B;
+}
+
+/* FOOTER */
+
+.footer {
+    color: #71847A;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    border-top: 1px solid #26382E;
+    padding-top: 20px;
+    margin-top: 35px;
+}
+
+/* HIDE DEFAULT ELEMENTS */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+div[data-testid="stDecoration"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# --------------------------------------------------
 # DEMO DATA
 # --------------------------------------------------
 
