@@ -835,20 +835,6 @@ except Exception as e:
 # DATA STATUS
 # ============================================================
 
-if demo_mode:
-
-    st.info(
-        "DEMO MODE: The dashboard is using illustrative sample readings. "
-        "These values are not live Bengaluru measurements. "
-        "Upload your team's dataset to analyse actual observations."
-    )
-
-else:
-
-    st.success(
-        f"Dataset loaded successfully: "
-        f"{len(historical_data)} valid observations."
-    )
 
 
 # ============================================================
