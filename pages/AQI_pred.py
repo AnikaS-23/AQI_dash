@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import timedelta
-from modules.predictions import predict_next_hour
 
 # ============================================================
 # AEROSENSE AI — AQI PREDICTION
@@ -15,7 +14,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# GLOBAL THEME
+# GLOBAL HOMEPAGE THEME
 # ============================================================
 
 st.markdown("""
@@ -45,6 +44,8 @@ st.markdown("""
     padding-bottom: 3rem;
 }
 
+/* SIDEBAR */
+
 section[data-testid="stSidebar"] {
     background: #0B110E;
     border-right: 1px solid #1D2C23;
@@ -68,6 +69,8 @@ section[data-testid="stSidebar"] [aria-current="page"] {
     border-left: 3px solid #8CCF9B;
 }
 
+/* TEXT */
+
 h1, h2, h3, h4 {
     font-family: 'Manrope', sans-serif !important;
     color: var(--white) !important;
@@ -80,6 +83,8 @@ p, li, label {
 .stCaption, [data-testid="stCaptionContainer"] {
     color: var(--muted) !important;
 }
+
+/* BRAND */
 
 .brand {
     font-family: 'Manrope', sans-serif;
@@ -112,6 +117,8 @@ p, li, label {
     letter-spacing: 1px;
 }
 
+/* HERO */
+
 .hero-label {
     color: #8CCF9B;
     font-size: 11px;
@@ -133,6 +140,15 @@ p, li, label {
     color: #8CCF9B;
 }
 
+.hero-description {
+    color: #9AABA0;
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 720px;
+}
+
+/* SECTION LABEL */
+
 .section-label {
     color: #9ACBA3;
     font-size: 11px;
@@ -140,6 +156,8 @@ p, li, label {
     letter-spacing: 2px;
     margin-bottom: 16px;
 }
+
+/* CARDS */
 
 div[data-testid="stVerticalBlockBorderWrapper"] {
     background: #111815;
@@ -155,6 +173,8 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 div[data-testid="stVerticalBlockBorderWrapper"] > div {
     padding: 9px;
 }
+
+/* METRICS */
 
 div[data-testid="stMetric"] {
     background: #111815;
@@ -172,6 +192,8 @@ div[data-testid="stMetricValue"] {
     font-family: 'Manrope', sans-serif;
     font-weight: 800;
 }
+
+/* CUSTOM METRIC CARDS */
 
 .metric-card {
     background: #111815;
@@ -208,6 +230,8 @@ div[data-testid="stMetricValue"] {
     margin-top: 5px;
 }
 
+/* PANELS */
+
 .panel {
     background: #111815;
     border: 1px solid #25372D;
@@ -234,6 +258,8 @@ div[data-testid="stMetricValue"] {
     font-size: 12px;
     margin-bottom: 13px;
 }
+
+/* STATUS PILLS */
 
 .status-pill.good {
     background: #14251A;
@@ -271,6 +297,8 @@ div[data-testid="stMetricValue"] {
     border: 1px solid #713131;
 }
 
+/* NOTICES */
+
 .notice {
     background: #151F1A;
     border: 1px solid #25372D;
@@ -282,6 +310,8 @@ div[data-testid="stMetricValue"] {
     line-height: 1.8;
     margin: 12px 0;
 }
+
+/* INPUTS */
 
 .stTextInput input,
 .stNumberInput input {
@@ -311,6 +341,8 @@ div[data-testid="stMetricValue"] {
     color: #C0CEC3 !important;
 }
 
+/* BUTTONS */
+
 .stButton > button,
 .stDownloadButton > button {
     background: #8CCF9B;
@@ -326,6 +358,8 @@ div[data-testid="stMetricValue"] {
     color: #08100B;
 }
 
+/* EXPANDERS */
+
 div[data-testid="stExpander"] {
     background: #111815;
     border: 1px solid #25372D;
@@ -336,15 +370,21 @@ div[data-testid="stExpander"] summary {
     color: #EDF5EF;
 }
 
+/* DATAFRAME */
+
 div[data-testid="stDataFrame"] {
     border: 1px solid #25372D;
     border-radius: 12px;
     overflow: hidden;
 }
 
+/* CHARTS */
+
 .stProgress > div > div > div {
     background: #8CCF9B;
 }
+
+/* ALERTS */
 
 div[data-testid="stAlert"] {
     background: #151F1A;
@@ -352,9 +392,13 @@ div[data-testid="stAlert"] {
     border-radius: 12px;
 }
 
+/* DIVIDERS */
+
 hr {
     border-color: #25372D !important;
 }
+
+/* HIDE DEFAULT ELEMENTS */
 
 #MainMenu {
     visibility: hidden;
@@ -368,11 +412,14 @@ div[data-testid="stDecoration"] {
     display: none;
 }
 
+/* FOOTER */
+
 .footer-text {
     color: #71847A;
     font-size: 10px;
     letter-spacing: 1.2px;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -461,23 +508,16 @@ def prepare_data(df, time_column, aqi_column):
     ]
 
     if time_column != "No timestamp column":
-
         data[time_column] = pd.to_datetime(
             data[time_column], errors="coerce"
         )
-
         data = data.dropna(subset=[time_column])
-
         data = data.sort_values(time_column)
-
         data = data.rename(
             columns={time_column: "Timestamp"}
         )
-
     else:
-
         data = data.reset_index(drop=True)
-
         data["Timestamp"] = pd.date_range(
             end=pd.Timestamp.now(),
             periods=len(data),
@@ -485,24 +525,19 @@ def prepare_data(df, time_column, aqi_column):
         )
 
     data = data[["Timestamp", aqi_column]].copy()
-
-    data = data.rename(
-        columns={aqi_column: "AQI"}
-    )
+    data = data.rename(columns={aqi_column: "AQI"})
 
     data = data.drop_duplicates(
         subset=["Timestamp"], keep="last"
     )
 
-    data = data.sort_values(
-        "Timestamp"
-    ).reset_index(drop=True)
+    data = data.sort_values("Timestamp").reset_index(drop=True)
 
     return data
 
 
 # ============================================================
-# BASELINE 24-HOUR FORECAST
+# BASELINE FORECAST
 # ============================================================
 
 def generate_forecast(data, forecast_hours=24):
@@ -521,7 +556,6 @@ def generate_forecast(data, forecast_hours=24):
     slope, intercept = np.polyfit(x, recent, 1)
 
     fitted = slope * x + intercept
-
     residuals = recent - fitted
 
     residual_std = float(np.std(residuals))
@@ -533,20 +567,12 @@ def generate_forecast(data, forecast_hours=24):
     future_steps = np.arange(1, forecast_hours + 1)
 
     predicted = last_value + damped_slope * future_steps
-
     predicted = np.clip(predicted, 0, 500)
 
-    uncertainty = residual_std * np.sqrt(
-        future_steps / 3
-    )
+    uncertainty = residual_std * np.sqrt(future_steps / 3)
 
-    lower = np.clip(
-        predicted - uncertainty, 0, 500
-    )
-
-    upper = np.clip(
-        predicted + uncertainty, 0, 500
-    )
+    lower = np.clip(predicted - uncertainty, 0, 500)
+    upper = np.clip(predicted + uncertainty, 0, 500)
 
     last_timestamp = pd.to_datetime(
         data["Timestamp"].iloc[-1]
@@ -574,19 +600,16 @@ def generate_forecast(data, forecast_hours=24):
 top_left, top_right = st.columns([3, 1])
 
 with top_left:
-
     st.markdown(
         '<div class="brand"><span class="brand-dot">●</span> AEROSENSE AI</div>',
         unsafe_allow_html=True
     )
-
     st.markdown(
         '<div class="brand-sub">AIR QUALITY INTELLIGENCE PLATFORM</div>',
         unsafe_allow_html=True
     )
 
 with top_right:
-
     st.markdown(
         '<div style="text-align:right; padding-top:10px;">'
         '<span class="status-pill">● SYSTEM ONLINE</span></div>',
@@ -594,16 +617,12 @@ with top_right:
     )
 
 st.write("")
-
-st.caption(
-    "ENVIRONMENTAL INTELLIGENCE  /  PREDICTIVE ANALYTICS"
-)
-
+st.caption("ENVIRONMENTAL INTELLIGENCE  /  PREDICTIVE ANALYTICS")
 st.divider()
 
 
 # ============================================================
-# HERO SECTION
+# HERO SECTION — CORRECTED
 # ============================================================
 
 st.write("")
@@ -621,6 +640,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.write("")
+
+# IMPORTANT: No HTML <br> tags in the description.
+# Separate paragraphs are created using normal HTML paragraph tags.
+
+st.write("")
 st.write("")
 
 
@@ -633,7 +657,6 @@ section_heading("01", "Historical data source")
 left, right = st.columns([1.5, 1])
 
 with left:
-
     uploaded_file = st.file_uploader(
         "Upload historical AQI data (CSV)",
         type=["csv"],
@@ -651,7 +674,6 @@ demo_mode = False
 if uploaded_file is not None:
 
     try:
-
         raw_data = pd.read_csv(uploaded_file)
 
         if raw_data.empty:
@@ -659,7 +681,6 @@ if uploaded_file is not None:
             st.stop()
 
     except Exception as e:
-
         st.error(f"Could not read the uploaded CSV: {e}")
         st.stop()
 
@@ -716,31 +737,23 @@ aqi_candidates = [
 ]
 
 detected_time = next(
-    (
-        lower_columns[c]
-        for c in time_candidates
-        if c in lower_columns
-    ),
+    (lower_columns[c] for c in time_candidates
+     if c in lower_columns),
     None
 )
 
 detected_aqi = next(
-    (
-        lower_columns[c]
-        for c in aqi_candidates
-        if c in lower_columns
-    ),
+    (lower_columns[c] for c in aqi_candidates
+     if c in lower_columns),
     None
 )
 
 numeric_candidates = []
 
 for col in columns:
-
     converted = pd.to_numeric(
         raw_data[col], errors="coerce"
     )
-
     if converted.notna().sum() >= 3:
         numeric_candidates.append(col)
 
@@ -748,12 +761,10 @@ if detected_aqi is None and numeric_candidates:
     detected_aqi = numeric_candidates[0]
 
 if detected_aqi is None:
-
     st.error(
         "Could not detect an AQI column. "
         "Please upload a CSV with a numeric AQI column."
     )
-
     st.stop()
 
 
@@ -763,15 +774,11 @@ if detected_aqi is None:
 
 if uploaded_file is not None:
 
-    with st.expander(
-        "Configure dataset columns",
-        expanded=True
-    ):
+    with st.expander("Configure dataset columns", expanded=True):
 
         col_a, col_b = st.columns(2)
 
         with col_a:
-
             time_options = ["No timestamp column"] + columns
 
             default_time_index = (
@@ -786,7 +793,6 @@ if uploaded_file is not None:
             )
 
         with col_b:
-
             default_aqi_index = (
                 columns.index(detected_aqi)
                 if detected_aqi in columns else 0
@@ -799,7 +805,6 @@ if uploaded_file is not None:
             )
 
 else:
-
     time_column = "timestamp"
     aqi_column = "aqi"
 
@@ -817,12 +822,10 @@ try:
     )
 
     if len(historical_data) < 3:
-
         st.error(
             "Not enough valid AQI observations. "
             "Please provide at least 3 readings."
         )
-
         st.stop()
 
 except Exception as e:
@@ -835,139 +838,24 @@ except Exception as e:
 # DATA STATUS
 # ============================================================
 
+if demo_mode:
 
-
-# ============================================================
-# CURRENT AQI
-# ============================================================
-
-current_aqi = float(
-    historical_data["AQI"].iloc[-1]
-)
-
-average_aqi = float(
-    historical_data["AQI"].mean()
-)
-
-current_category, current_class = get_aqi_category(
-    current_aqi
-)
-
-
-# ============================================================
-# MACHINE LEARNING — RANDOM FOREST PREDICTION
-# ============================================================
-
-section_heading("02", "Random Forest next-hour prediction")
-
-st.markdown("""
-<div class="notice">
-    Enter the latest weather conditions to predict AQI for the next hour
-    using our trained Random Forest machine-learning model.
-</div>
-""", unsafe_allow_html=True)
-
-w1, w2, w3, w4 = st.columns(4)
-
-with w1:
-
-    temperature = st.number_input(
-        "Temperature (°C)",
-        value=28.0,
-        step=0.5
+    st.info(
+        "DEMO MODE: The dashboard is using illustrative sample readings. "
+        "These values are not live Bengaluru measurements. "
+        "Upload your team's dataset to analyse actual observations."
     )
 
-with w2:
+else:
 
-    humidity = st.number_input(
-        "Humidity (%)",
-        min_value=0.0,
-        max_value=100.0,
-        value=60.0
+    st.success(
+        f"Dataset loaded successfully: "
+        f"{len(historical_data)} valid observations."
     )
-
-with w3:
-
-    wind_speed = st.number_input(
-        "Wind speed",
-        min_value=0.0,
-        value=5.0
-    )
-
-with w4:
-
-    rain = st.number_input(
-        "Rain",
-        min_value=0.0,
-        value=0.0
-    )
-
-prediction_hour = int(
-    historical_data["Timestamp"].iloc[-1].hour
-)
-
-prediction_month = int(
-    historical_data["Timestamp"].iloc[-1].month
-)
-
-if st.button(
-    "Predict Next-Hour AQI",
-    use_container_width=True
-):
-
-    try:
-
-        ml_prediction = predict_next_hour(
-            aqi=current_aqi,
-            temperature=temperature,
-            humidity=humidity,
-            wind_speed=wind_speed,
-            rain=rain,
-            hour=prediction_hour,
-            month=prediction_month
-        )
-
-        ml_prediction = float(
-            np.clip(ml_prediction, 0, 500)
-        )
-
-        ml_category, ml_class = get_aqi_category(
-            ml_prediction
-        )
-
-        st.markdown("### Random Forest prediction")
-
-        p1, p2 = st.columns(2)
-
-        with p1:
-
-            st.metric(
-                "Predicted AQI (next hour)",
-                f"{ml_prediction:.1f}",
-                delta=f"{ml_prediction - current_aqi:+.1f}"
-            )
-
-        with p2:
-
-            st.markdown(
-                f'<br><span class="status-pill {ml_class}">'
-                f'{ml_category}</span>',
-                unsafe_allow_html=True
-            )
-
-        st.info(
-            get_advisory(ml_prediction)
-        )
-
-    except Exception as e:
-
-        st.error(
-            f"Prediction failed: {e}"
-        )
 
 
 # ============================================================
-# BASELINE 24-HOUR FORECAST
+# GENERATE FORECAST
 # ============================================================
 
 try:
@@ -979,12 +867,16 @@ try:
 
 except Exception as e:
 
-    st.error(
-        f"24-hour forecast could not be generated: {e}"
-    )
-
+    st.error(f"Forecast could not be generated: {e}")
     st.stop()
 
+
+# ============================================================
+# CALCULATE SUMMARY
+# ============================================================
+
+current_aqi = float(historical_data["AQI"].iloc[-1])
+average_aqi = float(historical_data["AQI"].mean())
 
 predicted_average = float(
     forecast_data["Predicted AQI"].mean()
@@ -1005,6 +897,8 @@ change_percent = (
     if current_aqi != 0 else 0
 )
 
+current_category, current_class = get_aqi_category(current_aqi)
+
 forecast_category, forecast_class = get_aqi_category(
     predicted_average
 )
@@ -1014,12 +908,11 @@ forecast_category, forecast_class = get_aqi_category(
 # SUMMARY CARDS
 # ============================================================
 
-section_heading("03", "24-hour baseline forecast overview")
+section_heading("02", "Forecast overview")
 
 m1, m2, m3, m4 = st.columns(4)
 
 with m1:
-
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Latest AQI</div>
@@ -1029,17 +922,15 @@ with m1:
     """, unsafe_allow_html=True)
 
 with m2:
-
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">24H average forecast</div>
         <div class="metric-value">{predicted_average:.0f}</div>
-        <div class="metric-note">Statistical baseline estimate</div>
+        <div class="metric-note">Baseline estimate</div>
     </div>
     """, unsafe_allow_html=True)
 
 with m3:
-
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Forecast maximum</div>
@@ -1049,7 +940,6 @@ with m3:
     """, unsafe_allow_html=True)
 
 with m4:
-
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Forecast minimum</div>
@@ -1063,7 +953,7 @@ with m4:
 # FORECAST STATUS
 # ============================================================
 
-section_heading("04", "Expected air quality")
+section_heading("03", "Expected air quality")
 
 status_col, advisory_col = st.columns([1, 2])
 
@@ -1102,7 +992,7 @@ with advisory_col:
 # FORECAST CHART
 # ============================================================
 
-section_heading("05", "24-hour AQI forecast")
+section_heading("04", "24-hour AQI forecast")
 
 st.markdown("""
 <div class="panel">
@@ -1114,14 +1004,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 history_chart = historical_data.tail(24).copy()
+history_chart = history_chart.set_index("Timestamp")
 
-history_chart = history_chart.set_index(
-    "Timestamp"
-)
-
-forecast_chart = forecast_data.set_index(
-    "Timestamp"
-)
+forecast_chart = forecast_data.set_index("Timestamp")
 
 chart_data = pd.DataFrame({
     "Historical AQI": history_chart["AQI"],
@@ -1147,32 +1032,24 @@ st.caption(
 # FORECAST INTERPRETATION
 # ============================================================
 
-section_heading("06", "Forecast interpretation")
+section_heading("05", "Forecast interpretation")
 
 interpret_col1, interpret_col2 = st.columns(2)
 
 with interpret_col1:
 
     if change > 5:
-
         trend_text = "Potential deterioration"
-
         trend_description = (
             "The forecast average is higher than the latest reading."
         )
-
     elif change < -5:
-
         trend_text = "Potential improvement"
-
         trend_description = (
             "The forecast average is lower than the latest reading."
         )
-
     else:
-
         trend_text = "Relatively stable"
-
         trend_description = (
             "The forecast average is close to the latest reading."
         )
@@ -1252,26 +1129,20 @@ with interpret_col2:
 # HISTORICAL ANALYSIS
 # ============================================================
 
-section_heading("07", "Historical performance")
+section_heading("06", "Historical performance")
 
 hist1, hist2, hist3 = st.columns(3)
 
 with hist1:
-
-    st.metric(
-        "Historical average",
-        f"{average_aqi:.1f}"
-    )
+    st.metric("Historical average", f"{average_aqi:.1f}")
 
 with hist2:
-
     st.metric(
         "Historical highest",
         f"{historical_data['AQI'].max():.0f}"
     )
 
 with hist3:
-
     st.metric(
         "Historical lowest",
         f"{historical_data['AQI'].min():.0f}"
@@ -1282,16 +1153,13 @@ with st.expander("View historical AQI readings"):
 
     display_history = historical_data.copy()
 
-    display_history["Category"] = display_history[
-        "AQI"
-    ].apply(
+    display_history["Category"] = display_history["AQI"].apply(
         lambda x: get_aqi_category(x)[0]
     )
 
     st.dataframe(
         display_history.sort_values(
-            "Timestamp",
-            ascending=False
+            "Timestamp", ascending=False
         ),
         use_container_width=True,
         hide_index=True
@@ -1302,15 +1170,13 @@ with st.expander("View historical AQI readings"):
 # FORECAST TABLE
 # ============================================================
 
-section_heading("08", "Detailed forecast data")
+section_heading("07", "Detailed forecast data")
 
 display_forecast = forecast_data.copy()
 
 display_forecast["Category"] = display_forecast[
     "Predicted AQI"
-].apply(
-    lambda x: get_aqi_category(x)[0]
-)
+].apply(lambda x: get_aqi_category(x)[0])
 
 display_forecast["Predicted AQI"] = (
     display_forecast["Predicted AQI"].round(1)
@@ -1335,15 +1201,13 @@ st.dataframe(
 # DOWNLOAD FORECAST
 # ============================================================
 
-section_heading("09", "Export forecast")
+section_heading("08", "Export forecast")
 
 download_data = forecast_data.copy()
 
 download_data["Category"] = download_data[
     "Predicted AQI"
-].apply(
-    lambda x: get_aqi_category(x)[0]
-)
+].apply(lambda x: get_aqi_category(x)[0])
 
 csv_data = download_data.to_csv(
     index=False
@@ -1365,33 +1229,30 @@ st.download_button(
 with st.expander("How does this prediction work?"):
 
     st.markdown("""
-    **MACHINE LEARNING MODEL**
+    **CURRENT FORECASTING METHOD**
 
-    - Random Forest Regressor trained on historical air-quality and weather data.
-    - Uses current AQI, temperature, humidity, wind speed, rainfall, hour and month.
-    - Predicts AQI for the next hour.
-    - Evaluated using a chronological train-test split.
+    This page currently uses a statistical baseline:
 
-    **MODEL PERFORMANCE**
+    1. Reads historical AQI observations.
+    2. Uses up to the latest 48 readings.
+    3. Estimates the recent linear trend.
+    4. Dampens the trend to reduce aggressive extrapolation.
+    5. Produces estimates for the next 24 hours.
+    6. Calculates an illustrative uncertainty range from recent residuals.
 
-    | Metric | Result |
-    |---|---:|
-    | MAE | 3.13 |
-    | RMSE | 5.39 |
-    | R² | 0.9976 |
-    | Persistence baseline MAE | 6.16 |
+    **IMPORTANT LIMITATIONS**
 
-    **ADDITIONAL 24-HOUR BASELINE**
+    - This is not a trained machine-learning model.
+    - It does not currently use weather variables.
+    - It cannot reliably anticipate sudden pollution events.
+    - Forecast quality depends on the quality and frequency of historical data.
+    - The forecast should not be treated as an official air-quality warning.
 
-    The dashboard also displays a separate statistical 24-hour trend estimate.
-    It is not generated by the Random Forest model.
+    **PLANNED MODEL INTEGRATION**
 
-    **LIMITATIONS**
-
-    - Predictions depend on the quality of supplied weather inputs.
-    - Sudden pollution events may not be anticipated.
-    - Model performance on new cities or unseen conditions may differ.
-    - Predictions are estimates, not official air-quality warnings.
+    The baseline can later be replaced with your team's trained model,
+    using historical AQI, PM2.5, PM10, temperature, humidity, wind speed
+    and other available features.
     """)
 
 
@@ -1405,7 +1266,6 @@ st.divider()
 f1, f2 = st.columns(2)
 
 with f1:
-
     st.markdown(
         '<div class="footer-text">'
         'AEROSENSE AI · ENVIRONMENTAL INTELLIGENCE'
@@ -1414,7 +1274,6 @@ with f1:
     )
 
 with f2:
-
     st.markdown(
         '<div class="footer-text" style="text-align:right;">'
         'DATA · ANALYTICS · PREDICTION'
