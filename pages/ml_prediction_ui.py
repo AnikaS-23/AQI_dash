@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import pandas as pd
 
@@ -14,10 +13,7 @@ def render_ml_prediction(
 
     st.divider()
 
-    # ========================================================
     # HEADER
-    # ========================================================
-
     st.markdown(
         """
         <div style="margin-bottom:15px;">
@@ -25,11 +21,9 @@ def render_ml_prediction(
                         font-weight:700;letter-spacing:2px;">
                 ML / RANDOM FOREST MODEL
             </div>
-
             <h2 style="color:#EDF5EF;">
                 Next-Hour AQI Prediction
             </h2>
-
             <p style="color:#91A397;font-size:13px;">
                 Machine learning prediction using current AQI
                 and weather conditions.
@@ -44,10 +38,7 @@ def render_ml_prediction(
         "for the next hour using our trained Random Forest model."
     )
 
-    # ========================================================
     # WEATHER INPUTS
-    # ========================================================
-
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
@@ -93,10 +84,7 @@ def render_ml_prediction(
         "measurement conventions as the training dataset."
     )
 
-    # ========================================================
     # PREDICTION BUTTON
-    # ========================================================
-
     if st.button(
         "Predict Next-Hour AQI",
         key="random_forest_predict",
@@ -104,9 +92,7 @@ def render_ml_prediction(
     ):
 
         try:
-            with st.spinner(
-                "Running Random Forest prediction..."
-            ):
+            with st.spinner("Running Random Forest prediction..."):
 
                 prediction = predict_next_hour(
                     aqi=float(current_aqi),
@@ -118,24 +104,17 @@ def render_ml_prediction(
                     month=int(timestamp.month)
                 )
 
-            category, css_class = get_aqi_category(
-                prediction
-            )
+            category, css_class = get_aqi_category(prediction)
 
             st.session_state["ml_prediction"] = prediction
             st.session_state["ml_category"] = category
             st.session_state["ml_css_class"] = css_class
-            st.session_state["ml_advisory"] = get_advisory(
-                prediction
-            )
+            st.session_state["ml_advisory"] = get_advisory(prediction)
 
         except Exception as error:
             st.error(f"Prediction failed: {error}")
 
-    # ========================================================
-    # PREDICTION RESULT
-    # ========================================================
-
+    # DISPLAY PREDICTION RESULT
     if "ml_prediction" in st.session_state:
 
         prediction = st.session_state["ml_prediction"]
@@ -174,10 +153,7 @@ def render_ml_prediction(
             unsafe_allow_html=True
         )
 
-    # ========================================================
     # MODEL PERFORMANCE
-    # ========================================================
-
     st.divider()
 
     st.markdown(
@@ -199,10 +175,7 @@ def render_ml_prediction(
         "Lower MAE and RMSE indicate better prediction accuracy."
     )
 
-    # ========================================================
     # FEATURE IMPORTANCE
-    # ========================================================
-
     with st.expander("Explore model feature importance"):
 
         try:
@@ -237,10 +210,7 @@ def render_ml_prediction(
                 f"Feature importance unavailable: {error}"
             )
 
-    # ========================================================
     # MODEL INFORMATION
-    # ========================================================
-
     with st.expander("About the Random Forest model"):
 
         st.markdown(
@@ -269,4 +239,3 @@ def render_ml_prediction(
             on the dashboard.
             """
         )
-```
