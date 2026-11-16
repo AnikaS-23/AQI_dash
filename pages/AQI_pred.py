@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import timedelta
+from pages.ml_prediction_ui import render_ml_prediction
 
 # ============================================================
 # AEROSENSE AI — AQI PREDICTION
@@ -901,6 +902,20 @@ current_category, current_class = get_aqi_category(current_aqi)
 
 forecast_category, forecast_class = get_aqi_category(
     predicted_average
+)
+
+
+# ============================================================
+# RANDOM FOREST ML PREDICTION — NEW ADDITION
+# ============================================================
+
+render_ml_prediction(
+    current_aqi=current_aqi,
+    timestamp=pd.to_datetime(
+        historical_data["Timestamp"].iloc[-1]
+    ),
+    get_aqi_category=get_aqi_category,
+    get_advisory=get_advisory
 )
 
 
