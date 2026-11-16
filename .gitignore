@@ -1,0 +1,13 @@
+# Python environment
+.venv/
+__pycache__/
+*.pyc
+
+# Dataset files (keep large files out of GitHub)
+data/raw/
+data/processed/*.csv
+
+# Secrets
+.env
+
+!data/processed/airscope_sample.csv
