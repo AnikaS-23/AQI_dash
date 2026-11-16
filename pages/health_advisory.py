@@ -1,381 +1,490 @@
 
 import streamlit as st
 import pandas as pd
+import numpy as np
+
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 
 st.set_page_config(
     page_title="Health Advisory | AeroSense AI",
-    page_icon="◈",
+    page_icon="🌿",
     layout="wide"
 )
 
-# -------------------- DESIGN --------------------
+# ============================================================
+# CUSTOM STYLING
+# ============================================================
 
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
-.stApp {
-    background: #101411;
-    color: #e9eee9;
+html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
 }
-[data-testid="stSidebar"] {
-    background: #141a16;
-    border-right: 1px solid #29332c;
+
+.stApp {
+    background: #101411;
+    color: #E8EEE9;
 }
+
 .block-container {
-    max-width: 1450px;
     padding-top: 2rem;
-    padding-bottom: 4rem;
+    padding-bottom: 3rem;
+    max-width: 1250px;
 }
-h1, h2, h3, h4 {
-    font-family: 'Manrope', sans-serif !important;
-    color: #e9eee9 !important;
-}
-.eyebrow {
-    color: #8da99a;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-}
-.page-title {
+
+h1, h2, h3 {
     font-family: 'Manrope', sans-serif;
-    font-size: 36px;
+    color: #EDF4EF;
+}
+
+.hero {
+    background: linear-gradient(120deg, #1B2921, #17221C);
+    border: 1px solid #30463A;
+    border-radius: 18px;
+    padding: 30px;
+    margin-bottom: 28px;
+}
+
+.hero-tag {
+    color: #9CC9A8;
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.hero-title {
+    font-size: 34px;
     font-weight: 800;
-    letter-spacing: -1.5px;
+    margin-top: 12px;
+    color: #F1F7F2;
+}
+
+.hero-subtitle {
+    color: #AABBB0;
+    font-size: 15px;
     margin-top: 8px;
 }
-.subtitle {
-    color: #929e94;
-    font-size: 13px;
-    margin-bottom: 25px;
-}
-.panel {
-    background: #171e19;
-    border: 1px solid #303b33;
-    border-radius: 13px;
-    padding: 22px;
-    height: 100%;
-}
-.panel-label {
-    color: #89978d;
-    font-size: 10px;
-    letter-spacing: 1.7px;
-    font-weight: 700;
-}
-.aqi-number {
-    font-family: 'Manrope', sans-serif;
-    font-size: 62px;
-    font-weight: 800;
-    color: #e6eee7;
-    letter-spacing: -3px;
-}
-.aqi-category {
-    color: #a5bea9;
-    font-size: 17px;
-    font-weight: 600;
-}
-.muted {
-    color: #929e94;
-    font-size: 12px;
-    line-height: 1.7;
-}
+
 .section-heading {
     font-family: 'Manrope', sans-serif;
-    font-size: 21px;
+    font-size: 22px;
     font-weight: 700;
-    margin-top: 32px;
+    color: #EAF2EC;
+    margin-top: 28px;
     margin-bottom: 5px;
 }
+
 .section-caption {
-    color: #87948a;
-    font-size: 12px;
-    margin-bottom: 17px;
-}
-.feature-card {
-    background: #171e19;
-    border: 1px solid #303b33;
-    border-radius: 12px;
-    padding: 19px;
-    min-height: 145px;
-}
-.feature-number {
-    color: #7e9f8b;
-    font-size: 11px;
-    letter-spacing: 1.5px;
-}
-.feature-title {
-    color: #e2eae3;
-    font-size: 15px;
-    font-weight: 600;
-    margin: 12px 0 8px;
-}
-.feature-text {
-    color: #929e94;
-    font-size: 12px;
-    line-height: 1.7;
-}
-.group-row {
-    padding: 14px 0;
-    border-bottom: 1px solid #303b33;
-}
-.group-title {
-    color: #dce6dd;
-    font-size: 14px;
-    font-weight: 600;
-}
-.group-desc {
-    color: #89978d;
-    font-size: 12px;
-    line-height: 1.6;
-    margin-top: 5px;
-}
-.note {
-    background: #1b2821;
-    border: 1px solid #35483b;
-    border-left: 3px solid #82ad98;
-    border-radius: 8px;
-    padding: 15px 18px;
-    color: #b7c8ba;
+    color: #91A197;
     font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.panel {
+    background: #18211B;
+    border: 1px solid #2D3D32;
+    border-radius: 15px;
+    padding: 22px;
+    margin-bottom: 12px;
+}
+
+.panel-label {
+    color: #91B69B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+
+.metric-value {
+    color: #EAF4EC;
+    font-family: 'Manrope', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.metric-caption {
+    color: #93A398;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.muted {
+    color: #A8B7AC;
+    font-size: 14px;
     line-height: 1.7;
 }
-div[data-testid="stSlider"] {
-    padding-top: 10px;
-}
-.stButton button {
-    background: #27372d;
-    border: 1px solid #526b58;
-    color: #e5eee6;
+
+.info-note {
+    background: #1C2A21;
+    border-left: 3px solid #79A989;
     border-radius: 8px;
+    padding: 14px 17px;
+    color: #C3D4C8;
+    font-size: 13px;
+    margin: 12px 0;
 }
+
+div[data-testid="stMetric"] {
+    background: #18211B;
+    border: 1px solid #2D3D32;
+    padding: 18px;
+    border-radius: 13px;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #9EAEA2;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #EAF4EC;
+}
+
+.stButton > button {
+    background: #709B7B;
+    color: #101711;
+    border: none;
+    border-radius: 9px;
+    font-weight: 700;
+    padding: 10px 20px;
+}
+
+.stButton > button:hover {
+    background: #8BB797;
+    color: #101711;
+}
+
+.stSelectbox label,
+.stSlider label,
+.stNumberInput label,
+.stTextArea label {
+    color: #D6E2D9 !important;
+}
+
 hr {
-    border-color: #303b33 !important;
+    border-color: #2D3D32;
+}
+
+.footer {
+    text-align: center;
+    color: #74867A;
+    font-size: 12px;
+    padding-top: 25px;
+    border-top: 1px solid #29372D;
+    margin-top: 35px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 
-# -------------------- AQI LOGIC --------------------
+# ============================================================
+# AQI CATEGORY LOGIC
+# ============================================================
 
 def get_aqi_details(value):
+
     if value <= 50:
-        return "Good", "Air quality is satisfactory."
+        return "Good", "Air quality is satisfactory.", "#65B985"
+
     elif value <= 100:
-        return "Satisfactory", "Minor breathing discomfort may occur in sensitive people."
+        return "Satisfactory", "Minor breathing discomfort may occur in sensitive individuals.", "#A8C76D"
+
     elif value <= 200:
-        return "Moderate", "Sensitive individuals may experience discomfort."
+        return "Moderate", "Breathing discomfort may occur in people with lung, asthma or heart conditions.", "#D9B65D"
+
     elif value <= 300:
-        return "Poor", "Prolonged exposure may cause breathing discomfort."
+        return "Poor", "Prolonged exposure may cause breathing discomfort.", "#D98B56"
+
     elif value <= 400:
-        return "Very Poor", "Respiratory effects may occur after prolonged exposure."
-    return "Severe", "Health impacts may occur even during light activity."
+        return "Very Poor", "Respiratory effects may occur with prolonged exposure.", "#D66D62"
+
+    else:
+        return "Severe", "Health effects may be experienced by everyone, with greater risk for sensitive groups.", "#B94F59"
 
 
-# -------------------- HEADER --------------------
+def get_health_advice(category):
 
-st.markdown(
-    '<div class="eyebrow">AEROSENSE AI / ENVIRONMENTAL INTELLIGENCE</div>',
-    unsafe_allow_html=True
-)
-st.markdown('<div class="page-title">Health Advisory</div>',
-            unsafe_allow_html=True)
-st.markdown(
-    '<div class="subtitle">Exposure assessment · Personalised guidance · Public health insights</div>',
-    unsafe_allow_html=True
-)
+    advice = {
+        "Good": [
+            "Enjoy normal outdoor activities.",
+            "Continue regular daily routines.",
+            "Maintain good indoor ventilation."
+        ],
+        "Satisfactory": [
+            "Most people can continue normal activities.",
+            "Sensitive individuals should monitor symptoms.",
+            "Take breaks if outdoor conditions feel uncomfortable."
+        ],
+        "Moderate": [
+            "Sensitive individuals should reduce prolonged outdoor exertion.",
+            "Keep track of local air-quality updates.",
+            "Consider indoor activities if you experience discomfort."
+        ],
+        "Poor": [
+            "Reduce prolonged outdoor exertion.",
+            "Consider a well-fitted mask when exposure cannot be avoided.",
+            "Keep windows closed during periods of high pollution."
+        ],
+        "Very Poor": [
+            "Avoid strenuous outdoor activities where possible.",
+            "Keep indoor spaces as clean as possible.",
+            "Sensitive individuals should follow medical advice."
+        ],
+        "Severe": [
+            "Avoid outdoor physical exertion where possible.",
+            "Stay in a cleaner indoor environment.",
+            "Follow official local health and air-quality advisories."
+        ]
+    }
 
-st.divider()
-
-
-# -------------------- AQI ASSESSMENT --------------------
-
-st.markdown('<div class="section-heading">Air quality assessment</div>',
-            unsafe_allow_html=True)
-st.markdown(
-    '<div class="section-caption">Explore health guidance using an AQI reading.</div>',
-    unsafe_allow_html=True
-)
-
-left, right = st.columns([1, 1.5], gap="large")
-
-with left:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-label">SELECT AQI VALUE</div>',
-                unsafe_allow_html=True)
-    aqi = st.slider("Air Quality Index", 0, 500, 104)
-    st.markdown(
-        '<p class="muted">Adjust the value to explore different pollution scenarios.</p>',
-        unsafe_allow_html=True
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-category, description = get_aqi_details(aqi)
-
-with right:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-label">ASSESSMENT RESULT</div>',
-                unsafe_allow_html=True)
-    st.markdown(f'<div class="aqi-number">{aqi}</div>',
-                unsafe_allow_html=True)
-    st.markdown(f'<div class="aqi-category">{category}</div>',
-                unsafe_allow_html=True)
-    st.markdown(f'<p class="muted">{description}</p>',
-                unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    return advice.get(category, [])
 
 
-# -------------------- FEATURE 1: PERSONAL PROFILE --------------------
+# ============================================================
+# HEADER
+# ============================================================
 
-st.markdown('<div class="section-heading">Personalised risk assessment</div>',
-            unsafe_allow_html=True)
-st.markdown(
-    '<div class="section-caption">Explore how sensitivity to air pollution can differ between individuals.</div>',
-    unsafe_allow_html=True
-)
-
-p1, p2, p3 = st.columns(3)
-
-with p1:
-    age_group = st.selectbox(
-        "Age group",
-        ["Adult", "Child", "Older adult"]
-    )
-
-with p2:
-    respiratory = st.selectbox(
-        "Respiratory condition",
-        ["No known condition", "Asthma", "Other respiratory condition"]
-    )
-
-with p3:
-    heart_condition = st.selectbox(
-        "Heart condition",
-        ["No known condition", "Yes"]
-    )
-
-sensitive = (
-    age_group in ["Child", "Older adult"]
-    or respiratory != "No known condition"
-    or heart_condition == "Yes"
-)
-
-if sensitive and aqi > 100:
-    profile_message = (
-        "This profile may be more sensitive to elevated pollution. "
-        "Consider reducing prolonged outdoor exertion and follow relevant medical advice."
-    )
-elif aqi > 200:
-    profile_message = (
-        "Pollution is elevated. Consider reducing outdoor exertion "
-        "and monitoring official local advisories."
-    )
-else:
-    profile_message = (
-        "Continue monitoring air quality and follow your usual health guidance."
-    )
-
-st.markdown(f"""
-<div class="note">
-    <b>Profile guidance</b><br><br>
-    {profile_message}
+st.markdown("""
+<div class="hero">
+    <div class="hero-tag">AEROSENSE AI / HEALTH INTELLIGENCE</div>
+    <div class="hero-title">Health Advisory</div>
+    <div class="hero-subtitle">
+        Understand how air quality affects health, identify pollutant
+        patterns and explore practical exposure precautions.
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-st.caption(
-    "This is general educational guidance, not a clinical risk score or medical assessment."
-)
 
+# ============================================================
+# FEATURE 1: AQI HEALTH ASSESSMENT
+# ============================================================
 
-# -------------------- FEATURE 2: EXPOSURE CALCULATOR --------------------
-
-st.markdown('<div class="section-heading">Outdoor exposure estimator</div>',
+st.markdown('<div class="section-heading">01 / AQI health assessment</div>',
             unsafe_allow_html=True)
+
 st.markdown(
-    '<div class="section-caption">Explore how time outdoors and activity intensity change exposure.</div>',
+    '<div class="section-caption">Explore the health implications of different AQI levels.</div>',
     unsafe_allow_html=True
 )
 
-e1, e2 = st.columns(2)
+aqi_value = st.slider(
+    "Select AQI value",
+    min_value=0,
+    max_value=500,
+    value=120,
+    step=1
+)
 
-with e1:
-    hours = st.slider("Hours spent outdoors", 0, 12, 2)
+category, description, category_color = get_aqi_details(aqi_value)
 
-with e2:
-    activity = st.selectbox(
-        "Activity intensity",
-        ["Low - sitting or light walking",
-         "Moderate - walking",
-         "High - running or strenuous exercise"]
-    )
+col1, col2, col3 = st.columns(3)
 
-activity_factor = {
-    "Low - sitting or light walking": 1,
-    "Moderate - walking": 1.5,
-    "High - running or strenuous exercise": 2
-}
+with col1:
+    st.metric("AQI VALUE", aqi_value)
 
-exposure_index = round(hours * activity_factor[activity] * aqi / 100, 1)
+with col2:
+    st.metric("AIR QUALITY CATEGORY", category)
+
+with col3:
+    st.metric("HEALTH RISK LEVEL",
+              "Low" if aqi_value <= 100 else
+              "Moderate" if aqi_value <= 200 else
+              "High")
+
+st.markdown(f"""
+<div class="panel">
+    <div class="panel-label">CURRENT ASSESSMENT</div>
+    <h2 style="color:{category_color};">{category}</h2>
+    <p class="muted">{description}</p>
+</div>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
+# FEATURE 2: PERSONAL HEALTH ADVISORY
+# ============================================================
+
+st.markdown('<div class="section-heading">02 / Personalised health advisory</div>',
+            unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="section-caption">Explore precautions based on individual sensitivity.</div>',
+    unsafe_allow_html=True
+)
+
+sensitivity = st.selectbox(
+    "Select your sensitivity group",
+    [
+        "General population",
+        "People with asthma",
+        "People with respiratory conditions",
+        "Children",
+        "Older adults",
+        "People with heart conditions"
+    ]
+)
+
+advice = get_health_advice(category)
+
+if sensitivity != "General population":
+    advice = advice + [
+        "Pay attention to any unusual symptoms.",
+        "Consider limiting outdoor exposure when pollution levels are high."
+    ]
 
 st.markdown('<div class="panel">', unsafe_allow_html=True)
-st.markdown('<div class="panel-label">ILLUSTRATIVE EXPOSURE INDEX</div>',
-            unsafe_allow_html=True)
-st.markdown(f'<div class="aqi-number">{exposure_index}</div>',
-            unsafe_allow_html=True)
-st.markdown(
-    '<p class="muted">A simple comparison indicator based on selected AQI, time and activity. '
-    'It is not a measured dose or validated medical risk score.</p>',
-    unsafe_allow_html=True
-)
-st.markdown('</div>', unsafe_allow_html=True)
 
+st.markdown("**Recommended precautions**")
 
-# -------------------- FEATURE 3: AQI TREND TRACKER --------------------
+for item in advice:
+    st.markdown(f"- {item}")
 
-st.markdown('<div class="section-heading">AQI trend tracker</div>',
-            unsafe_allow_html=True)
-st.markdown(
-    '<div class="section-caption">Enter recent readings to understand whether air quality is changing.</div>',
-    unsafe_allow_html=True
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.caption(
+    "These are general educational precautions, not a personal medical diagnosis. "
+    "Seek professional advice for concerning symptoms."
 )
 
-default_readings = "145, 132, 118, 125, 104"
 
-trend_text = st.text_input(
-    "Enter AQI readings, oldest to newest, separated by commas",
-    value=default_readings
+# ============================================================
+# FEATURE 3: EXPOSURE ESTIMATOR
+# ============================================================
+
+st.markdown('<div class="section-heading">03 / Exposure estimator</div>',
+            unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="section-caption">Estimate time spent in different environments.</div>',
+    unsafe_allow_html=True
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    outdoor_hours = st.number_input(
+        "Outdoor exposure (hours/day)",
+        min_value=0.0,
+        max_value=24.0,
+        value=2.0,
+        step=0.5
+    )
+
+with col2:
+    indoor_hours = st.number_input(
+        "Indoor exposure (hours/day)",
+        min_value=0.0,
+        max_value=24.0,
+        value=8.0,
+        step=0.5
+    )
+
+total_hours = outdoor_hours + indoor_hours
+
+if total_hours > 24:
+    st.warning("Your combined exposure time exceeds 24 hours. Please adjust the values.")
+else:
+    outdoor_share = (
+        outdoor_hours / total_hours * 100
+        if total_hours > 0 else 0
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Outdoor exposure", f"{outdoor_hours:.1f} hours")
+
+    with col2:
+        st.metric("Outdoor share of entered time", f"{outdoor_share:.1f}%")
+
+    st.progress(int(outdoor_share))
+
+    st.markdown("""
+    <div class="info-note">
+        This tool describes your entered time distribution. It does not
+        calculate an individual's actual inhaled pollution dose.
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ============================================================
+# FEATURE 4: AQI TREND TRACKER
+# ============================================================
+
+st.markdown('<div class="section-heading">04 / AQI trend tracker</div>',
+            unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="section-caption">Enter recent AQI readings to inspect changes over time.</div>',
+    unsafe_allow_html=True
+)
+
+trend_input = st.text_input(
+    "Enter AQI readings separated by commas",
+    value="85, 92, 110, 105, 130, 118, 120",
+    help="Example: 85, 92, 110, 105, 130"
 )
 
 try:
-    readings = [int(x.strip()) for x in trend_text.split(",") if x.strip()]
+    trend_values = [
+        float(x.strip())
+        for x in trend_input.split(",")
+        if x.strip()
+    ]
 
-    if len(readings) < 2 or any(x < 0 or x > 500 for x in readings):
+    if not trend_values or any(x < 0 or x > 500 for x in trend_values):
         raise ValueError
 
     trend_df = pd.DataFrame({
-        "Reading": range(1, len(readings) + 1),
-        "AQI": readings
+        "Reading": range(1, len(trend_values) + 1),
+        "AQI": trend_values
     })
 
-    st.line_chart(trend_df.set_index("Reading"), y="AQI")
+    average_aqi = np.mean(trend_values)
+    change = trend_values[-1] - trend_values[0]
 
-    difference = readings[-1] - readings[0]
+    col1, col2, col3 = st.columns(3)
 
-    if difference < 0:
-        st.success(f"AQI decreased by {abs(difference)} points across these readings.")
-    elif difference > 0:
-        st.warning(f"AQI increased by {difference} points across these readings.")
+    with col1:
+        st.metric("Average AQI", f"{average_aqi:.1f}")
+
+    with col2:
+        st.metric("Latest AQI", f"{trend_values[-1]:.1f}")
+
+    with col3:
+        st.metric(
+            "Change from first reading",
+            f"{change:+.1f}"
+        )
+
+    st.line_chart(
+        trend_df.set_index("Reading")["AQI"],
+        color="#83B893"
+    )
+
+    if change > 0:
+        st.warning("The latest reading is higher than the first reading.")
+    elif change < 0:
+        st.success("The latest reading is lower than the first reading.")
     else:
-        st.info("AQI remained unchanged across these readings.")
+        st.info("The first and latest readings are equal.")
 
 except ValueError:
-    st.error("Enter at least two whole-number AQI readings between 0 and 500.")
+    st.error("Enter valid AQI values between 0 and 500, separated by commas.")
 
 
-# -------------------- FEATURE 4: POLLUTANT EXPLORER --------------------
+# ============================================================
+# FEATURE 5: POLLUTANT EXPLORER
+# ============================================================
 
-st.markdown('<div class="section-heading">Pollutant explorer</div>',
+st.markdown('<div class="section-heading">05 / Pollutant explorer</div>',
             unsafe_allow_html=True)
+
 st.markdown(
     '<div class="section-caption">Understand the major pollutants commonly monitored in air-quality assessments.</div>',
     unsafe_allow_html=True
@@ -419,65 +528,253 @@ st.markdown(f"""
 <div class="panel">
     <div class="panel-label">POLLUTANT PROFILE</div>
     <h2>{selected_pollutant}</h2>
-    <div class="aqi-category">{pollutant_name}</div>
+    <div style="color:#91B69B;font-weight:600;">{pollutant_name}</div>
     <p class="muted">{pollutant_description}</p>
 </div>
 """, unsafe_allow_html=True)
 
 
-# -------------------- FEATURE 5: ACTION CHECKLIST --------------------
+# ============================================================
+# FEATURE 6: POLLUTANT CONTRIBUTION ANALYSIS
+# ============================================================
 
-st.markdown('<div class="section-heading">Daily precaution checklist</div>',
+st.markdown('<div class="section-heading">06 / Pollutant contribution analysis</div>',
             unsafe_allow_html=True)
+
 st.markdown(
-    '<div class="section-caption">Track useful precautions for the day.</div>',
+    '<div class="section-caption">Compare pollutant sub-index values and their relative shares.</div>',
     unsafe_allow_html=True
 )
 
-tasks = [
-    "Check the latest local AQI reading",
-    "Review official air-quality advisories",
-    "Consider reducing strenuous outdoor activity when AQI is elevated",
-    "Keep indoor air cleaner where possible",
-    "Follow prescribed medical guidance if applicable"
-]
+st.markdown("""
+<div class="info-note">
+    Enter the pollutant sub-index values for a location. The dashboard
+    compares their relative shares among the values entered. These are
+    not official CPCB AQI contribution percentages.
+</div>
+""", unsafe_allow_html=True)
 
-completed = 0
+col1, col2, col3 = st.columns(3)
 
-for task in tasks:
-    if st.checkbox(task, key=f"task_{task}"):
-        completed += 1
+with col1:
+    pm25 = st.number_input(
+        "PM2.5 sub-index",
+        min_value=0.0,
+        max_value=500.0,
+        value=0.0,
+        step=1.0
+    )
 
-st.progress(completed / len(tasks))
-st.caption(f"{completed} of {len(tasks)} precautions checked")
+    pm10 = st.number_input(
+        "PM10 sub-index",
+        min_value=0.0,
+        max_value=500.0,
+        value=0.0,
+        step=1.0
+    )
 
+with col2:
+    no2 = st.number_input(
+        "NO₂ sub-index",
+        min_value=0.0,
+        max_value=500.0,
+        value=0.0,
+        step=1.0
+    )
 
-# -------------------- SENSITIVE GROUPS --------------------
+    so2 = st.number_input(
+        "SO₂ sub-index",
+        min_value=0.0,
+        max_value=500.0,
+        value=0.0,
+        step=1.0
+    )
 
-st.markdown('<div class="section-heading">Population vulnerability</div>',
-            unsafe_allow_html=True)
+with col3:
+    co = st.number_input(
+        "CO sub-index",
+        min_value=0.0,
+        max_value=500.0,
+        value=0.0,
+        step=1.0
+    )
 
-groups = [
-    ("Children", "Developing lungs can make children more sensitive to air pollution."),
-    ("Older adults", "Some older adults may be more vulnerable to pollution-related effects."),
-    ("Respiratory conditions", "People with asthma and other respiratory conditions may experience worsening symptoms."),
-    ("Cardiovascular conditions", "People with heart conditions may be more vulnerable to pollution-related effects.")
-]
+    ozone = st.number_input(
+        "O₃ sub-index",
+        min_value=0.0,
+        max_value=500.0,
+        value=0.0,
+        step=1.0
+    )
 
-for title, desc in groups:
+contribution_data = {
+    "PM2.5": pm25,
+    "PM10": pm10,
+    "NO₂": no2,
+    "SO₂": so2,
+    "CO": co,
+    "O₃": ozone
+}
+
+contribution_df = pd.DataFrame({
+    "Pollutant": list(contribution_data.keys()),
+    "Sub-index": list(contribution_data.values())
+})
+
+entered_df = contribution_df[
+    contribution_df["Sub-index"] > 0
+].copy()
+
+if len(entered_df) == 0:
+
+    st.info("Enter at least one pollutant sub-index value to view the analysis.")
+
+else:
+
+    total_subindex = entered_df["Sub-index"].sum()
+
+    entered_df["Relative share (%)"] = (
+        entered_df["Sub-index"] / total_subindex
+    ) * 100
+
+    entered_df = entered_df.sort_values(
+        "Relative share (%)",
+        ascending=False
+    )
+
+    highest_pollutant = entered_df.iloc[0]["Pollutant"]
+    highest_value = entered_df.iloc[0]["Sub-index"]
+    highest_share = entered_df.iloc[0]["Relative share (%)"]
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Highest sub-index",
+            highest_pollutant
+        )
+
+    with col2:
+        st.metric(
+            "Sub-index value",
+            f"{highest_value:.1f}"
+        )
+
+    with col3:
+        st.metric(
+            "Relative share",
+            f"{highest_share:.1f}%"
+        )
+
+    st.markdown("**Relative pollutant comparison**")
+
+    chart_data = entered_df.set_index("Pollutant")[
+        "Relative share (%)"
+    ]
+
+    st.bar_chart(
+        chart_data,
+        color="#83B893"
+    )
+
+    st.markdown("**Contribution breakdown**")
+
+    display_df = entered_df.copy()
+
+    display_df["Relative share (%)"] = (
+        display_df["Relative share (%)"].round(2)
+    )
+
+    display_df["Sub-index"] = (
+        display_df["Sub-index"].round(2)
+    )
+
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True
+    )
+
     st.markdown(f"""
-    <div class="group-row">
-        <div class="group-title">{title}</div>
-        <div class="group-desc">{desc}</div>
+    <div class="panel">
+        <div class="panel-label">KEY OBSERVATION</div>
+        <h3>{highest_pollutant} has the highest entered sub-index</h3>
+        <p class="muted">
+            Among the values entered, {highest_pollutant} has a sub-index
+            of {highest_value:.1f} and represents {highest_share:.1f}%
+            of their combined total.
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
 
-# -------------------- FOOTER --------------------
+# ============================================================
+# FEATURE 7: DAILY PRECAUTION CHECKLIST
+# ============================================================
 
-st.divider()
-st.caption(
-    "AEROSENSE AI · HEALTH INTELLIGENCE · "
-    "Educational guidance only. AQI categories follow the Indian CPCB scale. "
-    "Not a medical diagnosis."
+st.markdown('<div class="section-heading">07 / Daily precaution checklist</div>',
+            unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="section-caption">Track simple actions that can help reduce avoidable exposure.</div>',
+    unsafe_allow_html=True
 )
+
+checklist_items = [
+    "Checked the latest local AQI update",
+    "Avoided unnecessary outdoor exertion during high pollution",
+    "Kept indoor spaces clean",
+    "Checked ventilation and indoor air conditions",
+    "Followed relevant health precautions"
+]
+
+completed = 0
+
+for item in checklist_items:
+    if st.checkbox(item, key=f"check_{item}"):
+        completed += 1
+
+progress = completed / len(checklist_items)
+
+st.progress(progress)
+
+st.caption(
+    f"{completed} of {len(checklist_items)} precautions completed"
+)
+
+
+# ============================================================
+# FEATURE 8: POPULATION VULNERABILITY
+# ============================================================
+
+st.markdown('<div class="section-heading">08 / Population vulnerability</div>',
+            unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="section-caption">Groups that may be more sensitive to changes in air quality.</div>',
+    unsafe_allow_html=True
+)
+
+vulnerability = {
+    "Children": "Developing lungs and higher breathing rates can increase sensitivity to air pollution.",
+    "Older adults": "Age-related health factors may increase sensitivity to polluted air.",
+    "People with asthma": "Air pollution can trigger or worsen respiratory symptoms.",
+    "People with heart conditions": "Some pollutants can place additional stress on the cardiovascular system.",
+    "Outdoor workers": "Longer periods outdoors may increase exposure to ambient pollutants."
+}
+
+for group, explanation in vulnerability.items():
+    with st.expander(group):
+        st.write(explanation)
+
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+st.markdown("""
+<div class="footer">
+    AEROSENSE AI · HEALTH INTELLIGENCE MODULE<br>
+    Air quality insights for informed everyday decisions.
+</div>
+""", unsafe_allow_html=True)
