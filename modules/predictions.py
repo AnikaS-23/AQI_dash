@@ -3,10 +3,10 @@ import pandas as pd
 from pathlib import Path
 from functools import lru_cache
 
+# Model stored inside modules folder
 MODEL_PATH = (
-    Path(__file__).resolve().parent.parent
-    / "models"
-    / "aqi_random_forest_compressed.pkl"
+    Path(__file__).resolve().parent
+    / "aqi_random_forest_small.pkl"
 )
 
 FEATURES = [
@@ -18,6 +18,7 @@ FEATURES = [
     "hour",
     "month"
 ]
+
 
 @lru_cache(maxsize=1)
 def load_model():
